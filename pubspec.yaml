@@ -1,0 +1,63 @@
+name: triptribe
+description: "A new Flutter project."
+
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.8.1
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.8
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  smooth_page_indicator:
+  shared_preferences:
+  image_picker:
+  readmore:
+  floating_bottom_navigation_bar:
+  shimmer:
+
+
+
+
+
+  flutter_lints: ^5.0.0
+flutter:
+  uses-material-design: true
+
+  assets:
+     - assets/filter.png
+     - assets/explore.png
+     - assets/home.png
+     - assets/like.png
+     - assets/logo.jpg
+     - assets/menu.png
+     - assets/notification.png
+     - assets/onb.jpg
+     - assets/onb_shadow.png
+     - assets/profile.png
+     - assets/venis.jpg
+     - assets/istan.jpg
+     - assets/istanbul.jpg
+     - assets/room.jpg
+     - assets/icon.jpg
+     - assets/menu_bar.png
+     - assets/telegram.png
+     - assets/messenger.png
+
+  # fonts:
+  #   - family: Schyler
+  #     fonts:
+  #       - asset: fonts/Schyler-Regular.ttf
+  #       - asset: fonts/Schyler-Italic.ttf
+  #         style: italic
+  #   - family: Trajan Pro
+  #     fonts:
+  #       - asset: fonts/TrajanPro.ttf
+  #       - asset: fonts/TrajanPro_Bold.ttf
+  #         weight: 700
+  #
