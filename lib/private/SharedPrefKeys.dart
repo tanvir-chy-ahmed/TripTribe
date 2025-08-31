@@ -1,3 +1,0 @@
-final String PROFILE_IMAGE_KEY_SP = "I4M3jK3Y0fdfa";
-final String URL_SUPABASE = "https://fjyxowmcrqfledlqrbuy.supabase.co";
-final String ANON_KEY_SUPABASE = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZqeXhvd21jcnFmbGVkbHFyYnV5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTE2MjAyNDgsImV4cCI6MjA2NzE5NjI0OH0.sFNcBSBo9z3LmVhOdLJRL79F8ooLDORLKW7DWKKOy3I";
