@@ -1,6 +1,6 @@
-# 🌍 TravelMate – Discover & Share the Best Places
+# 🌍 TripTribe – Discover & Share the Best Places
 
-🚀 **TravelMate** is a functional travel companion app where you can explore amazing destinations, share hidden gems, and interact with other travelers. Whether you’re planning your next trip or just love exploring, TravelMate connects people with the best places around the world.
+🚀 **TripTribe** is a functional travel companion app where you can explore amazing destinations, share hidden gems, and interact with other travelers. Whether you’re planning your next trip or just love exploring, TravelMate connects people with the best places around the world.
 
 ---
 
@@ -40,10 +40,10 @@
 
 ```bash
 # Clone the repo
-git clone https://github.com/yourusername/travelmate.git  
+git clone https://github.com/tanvir-chy-ahmed/TripTribe.git
 
 # Navigate into the project
-cd travelmate  
+cd TripTribe  
 
 # Install dependencies
 flutter pub get  
@@ -71,7 +71,7 @@ flutter run
 ---
 
 ## 💡 Inspiration  
-✈️ TravelMate was created to:  
+✈️ TripTribe was created to:  
 - Make traveling more fun 🌟  
 - Help people discover hidden gems 🗺️  
 - Build a community of explorers who share their journeys 🤗  
