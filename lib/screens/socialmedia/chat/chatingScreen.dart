@@ -14,7 +14,7 @@ class ChattingScreen extends StatelessWidget {
             fontWeight: FontWeight.bold,
             color: Colors.black,
           ),
-        ) ,
+        ),
         centerTitle: true,
       ),
       body: Center(
@@ -30,3 +30,6 @@ class ChattingScreen extends StatelessWidget {
     );
   }
 }
+
+
+

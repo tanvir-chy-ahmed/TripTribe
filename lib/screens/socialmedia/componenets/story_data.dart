@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
 /// Simple Components model (adjust if you already declared SData elsewhere)
@@ -19,7 +20,7 @@ class StoryScroller extends StatelessWidget {
   const StoryScroller({
     super.key,
     required this.stories,
-    this.avatarSize = 68,                // diameter of the circle
+    this.avatarSize = 68, // diameter of the circle
     this.nameStyle = const TextStyle(
       fontSize: 12,
       fontWeight: FontWeight.w500,
@@ -50,21 +51,19 @@ class StoryScroller extends StatelessWidget {
 
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                    gradient: const LinearGradient(
-                      colors: [
-                        Color(0xFF5296fa), // soft sky blue
-                        Color(0xFF5296fa), // pale blue
-                        Color(0xFF99CCFF), // pastel blue
-                      ],
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                    )
-
-
+                  gradient: const LinearGradient(
+                    colors: [
+                      Color(0xFF5296fa), // soft sky blue
+                      Color(0xFF5296fa), // pale blue
+                      Color(0xFF99CCFF), // pastel blue
+                    ],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
                 ),
                 child: ClipOval(
-                  child: Image.network(
-                    story.photo,
+                  child: CachedNetworkImage(
+                    imageUrl: story.photo,
                     fit: BoxFit.cover,
                   ),
                 ),

@@ -1,10 +1,33 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:readmore/readmore.dart';
 import 'package:triptribe/screens/homescreen/HomeScreen.dart';
 
-class DetailsScreen extends StatelessWidget {
-  const DetailsScreen({super.key});
+class DetailsScreen extends StatefulWidget {
+  final name;
+  final imgUrl;
+  final location;
+  final rating;
+  final demo1;
+  final demo2;
+  final demo3;
 
+  const DetailsScreen({
+    super.key,
+    required this.name,
+    required this.rating,
+    required this.location,
+    required this.imgUrl,
+    required this.demo1,
+    required this.demo2,
+    required this.demo3,
+  });
+
+  @override
+  State<DetailsScreen> createState() => _DetailsScreenState();
+}
+
+class _DetailsScreenState extends State<DetailsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -32,196 +55,211 @@ class DetailsScreen extends StatelessWidget {
         ),
       ),
 
-      body: Padding(
-        padding: EdgeInsets.only(top: 60),
-        child: SingleChildScrollView(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              Stack(
-                children: [
-                  SizedBox(
-                    height: 500,
-                    width: MediaQuery.of(context).size.width,
-                    child: Image.network(
-                      "https://images.pexels.com/photos/158441/venice-italy-sunset-grand-canal-158441.jpeg",
-                      fit: BoxFit.cover,
+      body: RefreshIndicator(
+        onRefresh: () async {
+          setState(() {});
+        },
+        child: Padding(
+          padding: EdgeInsets.only(top: 60),
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                Stack(
+                  children: [
+                    SizedBox(
+                      height: 500,
+                      width: MediaQuery.of(context).size.width,
+                      child: CachedNetworkImage(
+                        imageUrl: widget.imgUrl,
+                        fit: BoxFit.cover,
+                      ),
                     ),
-                  ),
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Container(
-                          height: 50,
-                          width: 50,
-                          decoration: BoxDecoration(
-                            color: Color(0x4DB0BEC5),
+                    Padding(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 16,
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Container(
+                            height: 50,
+                            width: 50,
+                            decoration: BoxDecoration(
+                              color: Color(0x4DB0BEC5),
 
-                            // Soft material grey with transparency
-                            borderRadius: BorderRadius.circular(30),
-                          ),
-                          child: IconButton(
-                            onPressed: () {
-                              Navigator.pop(context);
-                            },
-                            icon: Icon(
-                              Icons.arrow_back_ios_new,
-                              color: Colors.white,
+                              // Soft material grey with transparency
+                              borderRadius: BorderRadius.circular(30),
+                            ),
+                            child: IconButton(
+                              onPressed: () {
+                                Navigator.pop(context);
+                              },
+                              icon: Icon(
+                                Icons.arrow_back_ios_new,
+                                color: Colors.white,
+                              ),
                             ),
                           ),
-                        ),
-                        Container(
-                          height: 50,
-                          width: 50,
-                          decoration: BoxDecoration(
-                            color: Color(0x33B0BEC5),
+                          Container(
+                            height: 50,
+                            width: 50,
+                            decoration: BoxDecoration(
+                              color: Color(0x33B0BEC5),
 
-                            // Soft material grey with transparency
-                            borderRadius: BorderRadius.circular(30),
+                              // Soft material grey with transparency
+                              borderRadius: BorderRadius.circular(30),
+                            ),
+                            child: FvrtIcon(),
                           ),
-                          child: FvrtIcon(),
-                        ),
-                      ],
-                    ),
-                  ),
-
-                  Container(
-                    margin: EdgeInsets.only(top: 390),
-                    width: double.infinity,
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.vertical(
-                        top: Radius.circular(42),
+                        ],
                       ),
-                      child: Card(
-                        margin: EdgeInsets.zero,
-                        elevation: 4,
-                        color: Colors.white,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.vertical(
-                            top: Radius.circular(42),
-                          ),
+                    ),
+
+                    Container(
+                      margin: EdgeInsets.only(top: 390),
+                      width: double.infinity,
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.vertical(
+                          top: Radius.circular(42),
                         ),
-                        child: Padding(
-                          padding: const EdgeInsets.all(16.0),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Card(
-                                elevation: 10,
-                                color: Colors.white,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(20),
+                        child: Card(
+                          margin: EdgeInsets.zero,
+                          elevation: 4,
+                          color: Colors.white,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.vertical(
+                              top: Radius.circular(42),
+                            ),
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.all(16.0),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Card(
+                                  elevation: 10,
+                                  color: Colors.white,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(20),
+                                  ),
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(12.0),
+                                    child: SingleChildScrollView(
+                                      scrollDirection: Axis.horizontal,
+                                      child: Row(
+                                        children: [
+                                          ImageContainer(
+                                            widget.demo1.toString().isNotEmpty
+                                                ? widget.demo1
+                                                : "https://images.pexels.com/photos/208701/pexels-photo-208701.jpeg",
+                                          ),
+                                          SizedBox(width: 8),
+                                          ImageContainer(
+                                            widget.demo1.toString().isNotEmpty
+                                                ? widget.demo2
+                                                : "https://images.pexels.com/photos/258196/pexels-photo-258196.jpeg",
+                                          ),
+
+                                          SizedBox(width: 8),
+                                          ImageContainer(
+                                            widget.demo1.toString().isNotEmpty
+                                                ? widget.demo3
+                                                : "https://images.pexels.com/photos/705782/pexels-photo-705782.jpeg",
+                                          ),
+                                          SizedBox(width: 8),
+                                          // ImageContainer(
+                                          //   widget.demo1.toString().isNotEmpty ? widget.demo4 : "https://images.pexels.com/photos/705782/pexels-photo-705782.jpeg" : ,
+                                          // ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
                                 ),
-                                child: Padding(
-                                  padding: const EdgeInsets.all(12.0),
-                                  child: SingleChildScrollView(
-                                    scrollDirection: Axis.horizontal,
-                                    child: Row(
+                                SizedBox(height: 12),
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      widget.name,
+                                      style: TextStyle(
+                                        fontSize: 24,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.black,
+                                        fontStyle: FontStyle.normal, // Optional
+                                      ),
+                                    ),
+
+                                    Text(
+                                      '\$120.5' + '/person',
+                                      style: TextStyle(
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.black,
+                                        fontStyle: FontStyle.normal, // Optional
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Row(
                                       children: [
-                                        ImageContainer(
-                                          "https://images.pexels.com/photos/208701/pexels-photo-208701.jpeg",
+                                        Icon(
+                                          Icons.location_pin,
+                                          size: 20,
+                                          color: Colors.grey.shade500,
                                         ),
-                                        SizedBox(width: 8),
-                                        ImageContainer(
-                                          "https://images.pexels.com/photos/258196/pexels-photo-258196.jpeg",
-                                        ),
-                                        SizedBox(width: 8),
-                                        ImageContainer(
-                                          "https://images.pexels.com/photos/705782/pexels-photo-705782.jpeg",
-                                        ),
-                                        SizedBox(width: 8),
-                                        ImageContainer(
-                                          "https://images.pexels.com/photos/705782/pexels-photo-705782.jpeg",
+                                        SizedBox(width: 4),
+                                        Text(
+                                          widget.location,
+                                          style: TextStyle(
+                                            fontSize: 20,
+                                            color: Colors.grey.shade500,
+                                          ),
                                         ),
                                       ],
                                     ),
-                                  ),
-                                ),
-                              ),
-                              SizedBox(height: 12),
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    'Bali',
-                                    style: TextStyle(
-                                      fontSize: 24,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.black,
-                                      fontStyle: FontStyle.normal, // Optional
-                                    ),
-                                  ),
-
-                                  Text(
-                                    '\$120.5' + '/person',
-                                    style: TextStyle(
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.black,
-                                      fontStyle: FontStyle.normal, // Optional
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Row(
-                                    children: [
-                                      Icon(
-                                        Icons.location_pin,
-                                        size: 20,
-                                        color: Colors.grey.shade500,
-                                      ),
-                                      SizedBox(width: 4),
-                                      Text(
-                                        "Italy",
-                                        style: TextStyle(
-                                          fontSize: 20,
-                                          color: Colors.grey.shade500,
+                                    Row(
+                                      children: [
+                                        Icon(
+                                          Icons.star,
+                                          size: 20,
+                                          color: Colors.amber,
                                         ),
-                                      ),
-                                    ],
-                                  ),
-                                  Row(
-                                    children: [
-                                      Icon(
-                                        Icons.star,
-                                        size: 20,
-                                        color: Colors.amber,
-                                      ),
-                                      SizedBox(width: 3),
-                                      Text(
-                                        "4.5",
-                                        style: TextStyle(fontSize: 20),
-                                      ),
-                                      // replace "rating" with actual value
-                                    ],
-                                  ),
-                                ],
-                              ),
+                                        SizedBox(width: 3),
+                                        Text(
+                                          widget.rating,
+                                          style: TextStyle(fontSize: 20),
+                                        ),
+                                        // replace "rating" with actual value
+                                      ],
+                                    ),
+                                  ],
+                                ),
 
-                              SizedBox(height: 10),
-                              OverlappingAvatars(),
-                              SizedBox(height: 10),
-                              ProductTabView(),
-                              SizedBox(height: 500),
-                            ],
+                                SizedBox(height: 10),
+                                OverlappingAvatars(),
+                                SizedBox(height: 10),
+                                ProductTabView(),
+                                SizedBox(height: 500),
+                              ],
+                            ),
                           ),
                         ),
                       ),
                     ),
-                  ),
-                ],
-              ),
-            ],
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -236,7 +274,10 @@ Widget ImageContainer(String url) {
     width: 110,
     decoration: BoxDecoration(
       borderRadius: BorderRadius.circular(12),
-      image: DecorationImage(image: NetworkImage(url), fit: BoxFit.cover),
+      image: DecorationImage(
+        image: CachedNetworkImageProvider(url),
+        fit: BoxFit.cover,
+      ),
     ),
   );
 }

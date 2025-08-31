@@ -20,6 +20,11 @@ dev_dependencies:
   readmore:
   floating_bottom_navigation_bar:
   shimmer:
+  cached_network_image:
+  supabase_flutter:
+  firebase_core:
+  firebase_messaging:
+  share_plus:
 
 
 

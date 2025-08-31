@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
-import 'package:triptribe/screens/HomeScreen.dart';
+import 'package:triptribe/navigationbar/bnview.dart';
 import 'package:triptribe/screens/onboard/onboarding_s1.dart';
 import 'package:triptribe/screens/onboard/onboarding_s2.dart';
 import 'package:triptribe/screens/onboard/onboarding_s3.dart';
@@ -54,7 +54,7 @@ class _OnboardingControllerState extends State<OnboardingController> {
 
     if (!showOnboarding) {
       // Skip onboarding and go to HomeScreen directly
-      return HomeScreen();
+      return FloatingNavBarScreen();
     }
 
     return Scaffold(
@@ -85,7 +85,9 @@ class _OnboardingControllerState extends State<OnboardingController> {
               OnboardingThree(
                 onNext: () => Navigator.pushReplacement(
                   context,
-                  MaterialPageRoute(builder: (context) => HomeScreen()),
+                  MaterialPageRoute(
+                    builder: (context) => FloatingNavBarScreen(),
+                  ),
                 ),
               ),
             ],

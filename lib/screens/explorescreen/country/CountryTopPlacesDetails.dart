@@ -1,11 +1,69 @@
-import 'package:flutter/material.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart'
+    show
+        Alignment,
+        Animation,
+        AnimationController,
+        AppBar,
+        Axis,
+        BorderRadius,
+        BoxDecoration,
+        BoxShadow,
+        BuildContext,
+        Card,
+        CircleAvatar,
+        CircularProgressIndicator,
+        ClipRRect,
+        Color,
+        Colors,
+        Column,
+        Container,
+        CrossAxisAlignment,
+        EdgeInsets,
+        FontWeight,
+        GestureDetector,
+        Hero,
+        Icon,
+        IconButton,
+        Icons,
+        LinearGradient,
+        MainAxisAlignment,
+        MainAxisSize,
+        MaterialPageRoute,
+        MediaQuery,
+        Navigator,
+        Padding,
+        Positioned,
+        RefreshIndicator,
+        RoundedRectangleBorder,
+        Row,
+        Scaffold,
+        ScaleTransition,
+        SingleChildScrollView,
+        SingleTickerProviderStateMixin,
+        SizedBox,
+        Spacer,
+        Stack,
+        State,
+        StatefulWidget,
+        StatelessWidget,
+        TapDownDetails,
+        TapUpDetails,
+        Text,
+        TextOverflow,
+        TextStyle,
+        Tween,
+        Widget;
+import 'package:shimmer/shimmer.dart' show Shimmer;
 import 'package:triptribe/screens/detailsscreen/DetailsScreen.dart';
-import 'package:shimmer/shimmer.dart';
+
 class CountryTopPlacesDetails extends StatefulWidget {
   const CountryTopPlacesDetails({super.key});
 
   @override
-  State<CountryTopPlacesDetails> createState() => _CountryTopPlacesDetailsState();
+  State<CountryTopPlacesDetails> createState() =>
+      _CountryTopPlacesDetailsState();
 }
 
 class _CountryTopPlacesDetailsState extends State<CountryTopPlacesDetails> {
@@ -20,21 +78,23 @@ class _CountryTopPlacesDetailsState extends State<CountryTopPlacesDetails> {
       appBar: AppBar(
         backgroundColor: Color(0xFFf2f2f2),
         automaticallyImplyLeading: false,
-        elevation: 0, // Flat look
+        elevation: 0,
+        // Flat look
         centerTitle: true,
         leading: Padding(
-          padding: const EdgeInsets.only(left: 12, top: 6, bottom: 6), // Left padding for leading
+          padding: const EdgeInsets.only(left: 12, top: 6, bottom: 6),
+          // Left padding for leading
           child: IconButton(
-              icon: Icon(
-                Icons.arrow_back_ios_new_rounded,
-                color: Colors.black87,
-                size: 20,
-              ),
-              onPressed: () {
-                Navigator.pop(context);
-              },
+            icon: Icon(
+              Icons.arrow_back_ios_new_rounded,
+              color: Colors.black87,
+              size: 20,
             ),
+            onPressed: () {
+              Navigator.pop(context);
+            },
           ),
+        ),
         title: Text(
           "Dubai",
           style: TextStyle(
@@ -46,7 +106,6 @@ class _CountryTopPlacesDetailsState extends State<CountryTopPlacesDetails> {
         ),
       ),
 
-
       body: RefreshIndicator(
         onRefresh: refresh,
         child: SingleChildScrollView(
@@ -54,87 +113,138 @@ class _CountryTopPlacesDetailsState extends State<CountryTopPlacesDetails> {
           child: Column(
             children: [
               CardListHorizontal(
-                  name: "Mount Fuji",
-                  imgUrl: "https://images.pexels.com/photos/33368124/pexels-photo-33368124.jpeg",
-                  location: "Japan",
-                  rating: "5.5"
+                name: "Mount Fuji",
+                imgUrl:
+                    "https://images.pexels.com/photos/33368124/pexels-photo-33368124.jpeg",
+                location: "Japan",
+                rating: "5.5",
+                demo1: '',
+                demo2: '',
+                demo3: '',
               ),
               CardListHorizontal(
-                  name: "Eiffel Tower",
-                  imgUrl: "https://images.pexels.com/photos/338515/pexels-photo-338515.jpeg",
-                  location: "Paris, France",
-                  rating: "4.8"
+                name: "Eiffel Tower",
+                imgUrl:
+                    "https://images.pexels.com/photos/338515/pexels-photo-338515.jpeg",
+                location: "Paris, France",
+                rating: "4.8",
+                demo1: '',
+                demo2: '',
+                demo3: '',
               ),
               CardListHorizontal(
-                  name: "Colosseum",
-                  imgUrl: "https://images.pexels.com/photos/3021382/pexels-photo-3021382.jpeg",
-                  location: "Rome, Italy",
-                  rating: "4.7"
+                name: "Colosseum",
+                imgUrl:
+                    "https://images.pexels.com/photos/3021382/pexels-photo-3021382.jpeg",
+                location: "Rome, Italy",
+                rating: "4.7",
+                demo1: '',
+                demo2: '',
+                demo3: '',
               ),
               CardListHorizontal(
-                  name: "Great Wall of China",
-                  imgUrl: "https://images.pexels.com/photos/6187743/pexels-photo-6187743.jpeg",
-                  location: "China",
-                  rating: "4.9"
+                name: "Great Wall of China",
+                imgUrl:
+                    "https://images.pexels.com/photos/6187743/pexels-photo-6187743.jpeg",
+                location: "China",
+                rating: "4.9",
+                demo1: '',
+                demo2: '',
+                demo3: '',
               ),
               CardListHorizontal(
-                  name: "salar de uyuni",
-                  imgUrl: "https://images.pexels.com/photos/30929523/pexels-photo-30929523.jpeg",
-                  location: "Bolivia",
-                  rating: "4.6"
+                name: "salar de uyuni",
+                imgUrl:
+                    "https://images.pexels.com/photos/30929523/pexels-photo-30929523.jpeg",
+                location: "Bolivia",
+                rating: "4.6",
+                demo1: '',
+                demo2: '',
+                demo3: '',
               ),
               CardListHorizontal(
-                  name: "Petra",
-                  imgUrl: "https://images.pexels.com/photos/11195793/pexels-photo-11195793.jpeg",
-                  location: "Jordan",
-                  rating: "4.9"
+                name: "Petra",
+                imgUrl:
+                    "https://images.pexels.com/photos/11195793/pexels-photo-11195793.jpeg",
+                location: "Jordan",
+                rating: "4.9",
+                demo1: '',
+                demo2: '',
+                demo3: '',
               ),
               CardListHorizontal(
-                  name: "Machu Picchu",
-                  imgUrl: "https://images.pexels.com/photos/2929906/pexels-photo-2929906.jpeg",
-                  location: "Cusco Region, Peru",
-                  rating: "4.9"
+                name: "Machu Picchu",
+                imgUrl:
+                    "https://images.pexels.com/photos/2929906/pexels-photo-2929906.jpeg",
+                location: "Cusco Region, Peru",
+                rating: "4.9",
+                demo1: '',
+                demo2: '',
+                demo3: '',
               ),
               CardListHorizontal(
-                  name: "Pyramids of Giza",
-                  imgUrl: "https://images.pexels.com/photos/18991572/pexels-photo-18991572.jpeg",
-                  location: "Giza, Egypt",
-                  rating: "4.8"
+                name: "Pyramids of Giza",
+                imgUrl:
+                    "https://images.pexels.com/photos/18991572/pexels-photo-18991572.jpeg",
+                location: "Giza, Egypt",
+                rating: "4.8",
+                demo1: '',
+                demo2: '',
+                demo3: '',
               ),
               CardListHorizontal(
-                  name: "Plitvice lakes",
-                  imgUrl: "https://images.pexels.com/photos/19818816/pexels-photo-19818816.jpeg",
-                  location: "Croatia",
-                  rating: "4.7"
+                name: "Plitvice lakes",
+                imgUrl:
+                    "https://images.pexels.com/photos/19818816/pexels-photo-19818816.jpeg",
+                location: "Croatia",
+                rating: "4.7",
+                demo1: '',
+                demo2: '',
+                demo3: '',
               ),
               CardListHorizontal(
-                  name: "Maldives Beachs",
-                  imgUrl: "https://images.pexels.com/photos/3601422/pexels-photo-3601422.jpeg",
-                  location: "Maldives",
-                  rating: "4.8"
+                name: "Maldives Beachs",
+                imgUrl:
+                    "https://images.pexels.com/photos/3601422/pexels-photo-3601422.jpeg",
+                location: "Maldives",
+                rating: "4.8",
+                demo1: '',
+                demo2: '',
+                demo3: '',
               ),
               CardListHorizontal(
-                  name: "Venice",
-                  imgUrl: "https://images.pexels.com/photos/10713946/pexels-photo-10713946.jpeg",
-                  location: "Italy",
-                  rating: "4.6"
+                name: "Venice",
+                imgUrl:
+                    "https://images.pexels.com/photos/10713946/pexels-photo-10713946.jpeg",
+                location: "Italy",
+                rating: "4.6",
+                demo1: '',
+                demo2: '',
+                demo3: '',
               ),
               CardListHorizontal(
-                  name: "Niagara Falls",
-                  imgUrl: "https://images.pexels.com/photos/5429909/pexels-photo-5429909.jpeg",
-                  location: "USA / Canada",
-                  rating: "4.8"
+                name: "Niagara Falls",
+                imgUrl:
+                    "https://images.pexels.com/photos/5429909/pexels-photo-5429909.jpeg",
+                location: "USA / Canada",
+                rating: "4.8",
+                demo1: '',
+                demo2: '',
+                demo3: '',
               ),
               CardListHorizontal(
-                  name: "Sydney Opera House",
-                  imgUrl: "https://images.pexels.com/photos/5707610/pexels-photo-5707610.jpeg",
-                  location: "Sydney, Australia",
-                  rating: "4.7"
+                name: "Sydney Opera House",
+                imgUrl:
+                    "https://images.pexels.com/photos/5707610/pexels-photo-5707610.jpeg",
+                location: "Sydney, Australia",
+                rating: "4.7",
+                demo1: '',
+                demo2: '',
+                demo3: '',
               ),
-      
+
               CircularProgressIndicator(),
-              SizedBox(height: 100,)
-      
+              SizedBox(height: 100),
             ],
           ),
         ),
@@ -143,13 +253,14 @@ class _CountryTopPlacesDetailsState extends State<CountryTopPlacesDetails> {
   }
 }
 
-
-
 class CardListHorizontal extends StatefulWidget {
   final String name;
   final String imgUrl;
   final String location;
   final String rating;
+  final String demo1;
+  final String demo2;
+  final String demo3;
 
   const CardListHorizontal({
     super.key,
@@ -157,6 +268,9 @@ class CardListHorizontal extends StatefulWidget {
     required this.imgUrl,
     required this.location,
     required this.rating,
+    required this.demo1,
+    required this.demo2,
+    required this.demo3,
   });
 
   @override
@@ -170,6 +284,7 @@ class _CardListHorizontalState extends State<CardListHorizontal>
   late Animation<double> _scaleAnimation;
 
   bool check = false;
+
   @override
   void initState() {
     super.initState();
@@ -205,7 +320,6 @@ class _CardListHorizontalState extends State<CardListHorizontal>
     _animationController.forward();
   }
 
-
   @override
   Widget build(BuildContext context) {
     bool isWishlisted = false;
@@ -216,7 +330,17 @@ class _CardListHorizontalState extends State<CardListHorizontal>
         _onTapUp(details);
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => DetailsScreen()),
+          MaterialPageRoute(
+            builder: (context) => DetailsScreen(
+              imgUrl: widget.imgUrl,
+              name: widget.name,
+              location: widget.location,
+              rating: widget.rating,
+              demo1: widget.demo1,
+              demo2: widget.demo2,
+              demo3: widget.demo3,
+            ),
+          ),
         );
       },
       onTapCancel: _onTapCancel,
@@ -242,19 +366,30 @@ class _CardListHorizontalState extends State<CardListHorizontal>
                       children: [
                         Hero(
                           tag: widget.imgUrl,
-                          child: Image.network(
-                            widget.imgUrl,
+                          child: CachedNetworkImage(
+                            imageUrl: widget.imgUrl,
                             height: 250,
                             width: MediaQuery.of(context).size.width,
                             fit: BoxFit.cover,
-                            errorBuilder: (context, error, stackTrace) =>
+                            errorWidget: (context, error, stackTrace) =>
                                 Center(child: Icon(Icons.broken_image)),
-                            loadingBuilder:
-                                (context, child, loadingProgress) {
-                              if (loadingProgress == null) return child;
-                              return Center(child: ShimmerExplore());
-                            },
+                            placeholder: (context, url) =>
+                                Center(child: ShimmerExplore()),
                           ),
+
+                          // Image.network(
+                          //   widget.imgUrl,
+                          //   height: 250,
+                          //   width: MediaQuery.of(context).size.width,
+                          //   fit: BoxFit.cover,
+                          //   errorBuilder: (context, error, stackTrace) =>
+                          //       Center(child: Icon(Icons.broken_image)),
+                          //   loadingBuilder:
+                          //       (context, child, loadingProgress) {
+                          //     if (loadingProgress == null) return child;
+                          //     return Center(child: ShimmerExplore());
+                          //   },
+                          // ),
                         ),
                         // Gradient Overlay
                         Positioned.fill(
@@ -282,8 +417,7 @@ class _CardListHorizontalState extends State<CardListHorizontal>
                   top: 16,
                   right: 16,
                   child: Container(
-                    padding:
-                    EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                     decoration: BoxDecoration(
                       color: Colors.redAccent.withOpacity(0.85),
                       borderRadius: BorderRadius.circular(20),
@@ -326,7 +460,6 @@ class _CardListHorizontalState extends State<CardListHorizontal>
                   ),
                 ),
 
-
                 // Text info (bottom center)
                 Positioned(
                   left: 16,
@@ -350,8 +483,11 @@ class _CardListHorizontalState extends State<CardListHorizontal>
                         mainAxisSize: MainAxisSize.min,
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Icon(Icons.location_pin,
-                              size: 18, color: Colors.white),
+                          Icon(
+                            Icons.location_pin,
+                            size: 18,
+                            color: Colors.white,
+                          ),
                           SizedBox(width: 4),
                           Text(
                             widget.location,
@@ -370,15 +506,24 @@ class _CardListHorizontalState extends State<CardListHorizontal>
                           double ratingValue =
                               double.tryParse(widget.rating) ?? 0.0;
                           if (index + 1 <= ratingValue.floor()) {
-                            return Icon(Icons.star,
-                                color: Colors.amber, size: 20);
+                            return Icon(
+                              Icons.star,
+                              color: Colors.amber,
+                              size: 20,
+                            );
                           } else if (index < ratingValue &&
                               ratingValue - ratingValue.floor() >= 0.5) {
-                            return Icon(Icons.star_half,
-                                color: Colors.amber, size: 20);
+                            return Icon(
+                              Icons.star_half,
+                              color: Colors.amber,
+                              size: 20,
+                            );
                           } else {
-                            return Icon(Icons.star_border,
-                                color: Colors.amber, size: 20);
+                            return Icon(
+                              Icons.star_border,
+                              color: Colors.amber,
+                              size: 20,
+                            );
                           }
                         }),
                       ),
@@ -453,6 +598,3 @@ class ShimmerExplore extends StatelessWidget {
     );
   }
 }
-
-
-

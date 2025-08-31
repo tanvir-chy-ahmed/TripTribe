@@ -1,7 +1,9 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
 class InstagramPostSlider extends StatefulWidget {
   final List<String> images;
+
   const InstagramPostSlider({Key? key, required this.images}) : super(key: key);
 
   @override
@@ -51,14 +53,14 @@ class _InstagramPostSliderState extends State<InstagramPostSlider> {
 
           // ------------  Bottom‑center indicator dots -----
           Positioned(
-            bottom: 12,          // distance from bottom edge
+            bottom: 12, // distance from bottom edge
             left: 0,
-            right: 0,           // widen to full width so Row can center itself
+            right: 0, // widen to full width so Row can center itself
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: List.generate(
                 widget.images.length,
-                    (idx) => AnimatedContainer(
+                (idx) => AnimatedContainer(
                   duration: const Duration(milliseconds: 200),
                   margin: const EdgeInsets.symmetric(horizontal: 3),
                   height: 6,
@@ -81,11 +83,15 @@ class _InstagramPostSliderState extends State<InstagramPostSlider> {
   Widget _buildImage(String path) {
     final isNetwork = path.startsWith('http');
     return isNetwork
-        ? Image.network(path, fit: BoxFit.cover, width: double.infinity)
-        : Image.network(path, fit: BoxFit.cover, width: double.infinity);
+        ? CachedNetworkImage(
+            imageUrl: path,
+            fit: BoxFit.cover,
+            width: double.infinity,
+          )
+        : CachedNetworkImage(
+            imageUrl: path,
+            fit: BoxFit.cover,
+            width: double.infinity,
+          );
   }
 }
-
-
-
-

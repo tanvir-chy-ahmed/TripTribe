@@ -12,65 +12,22 @@ class ExploreScreen extends StatefulWidget {
 class _ExploreScreenState extends State<ExploreScreen> {
   int selectedIndex = 0;
 
-  final List<String> filters = ["🔥 Trending", "🌏 Country","🌋Mountain","🏞️Nature","🏖️Beach"];
+  final List<String> filters = [
+    "🔥 Trending",
+    "🌏 Country",
+    "🌋Mountain",
+    "🏞️Nature",
+    "🏖️Beach",
+  ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-
-      // body: CustomScrollView(
-      //   slivers: [
-      //     // Main AppBar
-      //     SliverAppBar(
-      //       pinned: true,
-      //       backgroundColor: const Color(0xFFf2f2f2),
-      //       elevation: 5,
-      //       centerTitle: true,
-      //       title: const Text(
-      //         "Explore",
-      //         style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-      //       ),
-      //     ),
-      //
-      //     // Filters Bar
-      //     SliverToBoxAdapter(
-      //       child: Container(
-      //         color: Colors.transparent, // so content behind shows
-      //         padding: const EdgeInsets.all(16),
-      //         child: SingleChildScrollView(
-      //           scrollDirection: Axis.horizontal,
-      //           child: Row(
-      //             mainAxisAlignment: MainAxisAlignment.center,
-      //             children: List.generate(filters.length, (index) {
-      //               return SingleFilter(
-      //                 text: filters[index],
-      //                 isSelected: selectedIndex == index,
-      //                 onTap: () {
-      //                   setState(() {
-      //                     selectedIndex = index;
-      //                   });
-      //                 },
-      //               );
-      //             }),
-      //           ),
-      //         ),
-      //       ),
-      //     ),
-      //
-      //     // Content Area
-      //     SliverToBoxAdapter(
-      //       child: SizedBox(
-      //         height: MediaQuery.of(context).size.height, // just example
-      //         child: selectedIndex == 0
-      //             ? Trendingscreen()
-      //             : Countryscreen(),
-      //       ),
-      //     ),
-      //   ],
-      // ),
-
-
-        body: CustomScrollView(
+      body: RefreshIndicator(
+        onRefresh: () async {
+          setState(() {});
+        },
+        child: CustomScrollView(
           slivers: [
             // Main AppBar
             SliverAppBar(
@@ -87,12 +44,17 @@ class _ExploreScreenState extends State<ExploreScreen> {
             // Transparent Filters Bar (stays pinned)
             SliverAppBar(
               pinned: true,
-              backgroundColor: Colors.transparent, // transparent background
+              backgroundColor: Colors.transparent,
+              // transparent background
               elevation: 0,
               automaticallyImplyLeading: false,
-              toolbarHeight: 5, // height of the filter row
+              toolbarHeight: 5,
+              // height of the filter row
               flexibleSpace: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 10,
+                ),
                 child: SingleChildScrollView(
                   scrollDirection: Axis.horizontal,
                   child: Row(
@@ -115,14 +77,11 @@ class _ExploreScreenState extends State<ExploreScreen> {
 
             // Scrollable content
             SliverToBoxAdapter(
-              child: selectedIndex == 0
-                  ? Trendingscreen()
-                  : Countryscreen(),
+              child: selectedIndex == 0 ? Trendingscreen() : Countryscreen(),
             ),
           ],
-        )
-
-
+        ),
+      ),
     );
   }
 }
@@ -142,7 +101,7 @@ class SingleFilter extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(right: 10,left: 2),
+      padding: const EdgeInsets.only(right: 10, left: 2),
       child: GestureDetector(
         onTap: onTap,
         child: Container(
@@ -216,4 +175,3 @@ class _FilterListState extends State<FilterList> {
     );
   }
 }
-

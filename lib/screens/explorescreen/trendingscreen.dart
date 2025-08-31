@@ -1,6 +1,9 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:triptribe/screens/detailsscreen/DetailsScreen.dart';
+
+import '../../supabase/setup.dart';
 
 class Trendingscreen extends StatefulWidget {
   const Trendingscreen({super.key});
@@ -12,101 +15,62 @@ class Trendingscreen extends StatefulWidget {
 class _TrendingscreenState extends State<Trendingscreen> {
   @override
   Widget build(BuildContext context) {
-    Future refresh() async {
-      setState(() {});
-    }
+    return Column(
+      children: [
+        FutureBuilder<List<Map<String, dynamic>>>(
+          future: fetchAllImagesShuffled(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              // Center the progress indicator in full available space
+              return SizedBox(
+                height:
+                    MediaQuery.of(context).size.height *
+                    0.5, // optional, to limit height
+                child: Center(
+                  child: CircularProgressIndicator(
+                    valueColor: AlwaysStoppedAnimation<Color>(Colors.blue),
+                    // custom color
+                    strokeWidth: 4, // thicker line
+                  ),
+                ),
+              );
+            }
 
-    return RefreshIndicator(
-      onRefresh: refresh,
-      child: SingleChildScrollView(
-        scrollDirection: Axis.vertical,
-        child: Column(
-          children: [
-            CardListHorizontal(
-                name: "Mount Fuji",
-                imgUrl: "https://images.pexels.com/photos/33368124/pexels-photo-33368124.jpeg",
-                location: "Japan",
-                rating: "5.5"
-            ),
-            CardListHorizontal(
-                name: "Eiffel Tower",
-                imgUrl: "https://images.pexels.com/photos/338515/pexels-photo-338515.jpeg",
-                location: "Paris, France",
-                rating: "4.8"
-            ),
-            CardListHorizontal(
-                name: "Colosseum",
-                imgUrl: "https://images.pexels.com/photos/3021382/pexels-photo-3021382.jpeg",
-                location: "Rome, Italy",
-                rating: "4.7"
-            ),
-            CardListHorizontal(
-                name: "Great Wall of China",
-                imgUrl: "https://images.pexels.com/photos/6187743/pexels-photo-6187743.jpeg",
-                location: "China",
-                rating: "4.9"
-            ),
-            CardListHorizontal(
-                name: "salar de uyuni",
-                imgUrl: "https://images.pexels.com/photos/30929523/pexels-photo-30929523.jpeg",
-                location: "Bolivia",
-                rating: "4.6"
-            ),
-            CardListHorizontal(
-                name: "Petra",
-                imgUrl: "https://images.pexels.com/photos/11195793/pexels-photo-11195793.jpeg",
-                location: "Jordan",
-                rating: "4.9"
-            ),
-            CardListHorizontal(
-                name: "Machu Picchu",
-                imgUrl: "https://images.pexels.com/photos/2929906/pexels-photo-2929906.jpeg",
-                location: "Cusco Region, Peru",
-                rating: "4.9"
-            ),
-            CardListHorizontal(
-                name: "Pyramids of Giza",
-                imgUrl: "https://images.pexels.com/photos/18991572/pexels-photo-18991572.jpeg",
-                location: "Giza, Egypt",
-                rating: "4.8"
-            ),
-            CardListHorizontal(
-                name: "Plitvice lakes",
-                imgUrl: "https://images.pexels.com/photos/19818816/pexels-photo-19818816.jpeg",
-                location: "Croatia",
-                rating: "4.7"
-            ),
-            CardListHorizontal(
-                name: "Maldives Beachs",
-                imgUrl: "https://images.pexels.com/photos/3601422/pexels-photo-3601422.jpeg",
-                location: "Maldives",
-                rating: "4.8"
-            ),
-            CardListHorizontal(
-                name: "Venice",
-                imgUrl: "https://images.pexels.com/photos/10713946/pexels-photo-10713946.jpeg",
-                location: "Italy",
-                rating: "4.6"
-            ),
-            CardListHorizontal(
-                name: "Niagara Falls",
-                imgUrl: "https://images.pexels.com/photos/5429909/pexels-photo-5429909.jpeg",
-                location: "USA / Canada",
-                rating: "4.8"
-            ),
-            CardListHorizontal(
-                name: "Sydney Opera House",
-                imgUrl: "https://images.pexels.com/photos/5707610/pexels-photo-5707610.jpeg",
-                location: "Sydney, Australia",
-                rating: "4.7"
-            ),
+            if (snapshot.hasError) {
+              return SizedBox(
+                height: MediaQuery.of(context).size.height * 0.5,
+                child: Center(child: Text('Error: ${snapshot.error}')),
+              );
+            }
 
-            CircularProgressIndicator(),
-            SizedBox(height: 100,)
+            final images = snapshot.data ?? [];
 
-          ],
+            if (images.isEmpty) {
+              return SizedBox(
+                height: MediaQuery.of(context).size.height * 0.5,
+                child: Center(child: Text('No Item found.')),
+              );
+            }
+
+            return SingleChildScrollView(
+              child: Column(
+                children: images.map((image) {
+                  return CardListHorizontal(
+                    name: image['name'].toString(),
+                    imgUrl: image['imgUrl'].toString(),
+                    location: image['location'].toString(),
+                    rating: image['rating'].toString(),
+                    demo1: image['demo_1'].toString(),
+                    demo2: image['demo_2'].toString(),
+                    demo3: image['demo_3'].toString(),
+                  );
+                }).toList(),
+              ),
+            );
+          },
         ),
-      ),
+        SizedBox(height: 100),
+      ],
     );
   }
 }
@@ -116,6 +80,9 @@ class CardListHorizontal extends StatefulWidget {
   final String imgUrl;
   final String location;
   final String rating;
+  final String demo1;
+  final String demo2;
+  final String demo3;
 
   const CardListHorizontal({
     super.key,
@@ -123,6 +90,9 @@ class CardListHorizontal extends StatefulWidget {
     required this.imgUrl,
     required this.location,
     required this.rating,
+    required this.demo1,
+    required this.demo2,
+    required this.demo3,
   });
 
   @override
@@ -171,16 +141,26 @@ class _CardListHorizontalState extends State<CardListHorizontal>
   }
 
   bool check = false;
+
   @override
   Widget build(BuildContext context) {
-
     return GestureDetector(
       onTapDown: _onTapDown,
       onTapUp: (details) {
         _onTapUp(details);
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => DetailsScreen()),
+          MaterialPageRoute(
+            builder: (context) => DetailsScreen(
+              imgUrl: widget.imgUrl,
+              name: widget.name,
+              location: widget.location,
+              rating: widget.rating,
+              demo3: widget.demo1,
+              demo2: widget.demo2,
+              demo1: widget.demo3,
+            ),
+          ),
         );
       },
       onTapCancel: _onTapCancel,
@@ -206,19 +186,30 @@ class _CardListHorizontalState extends State<CardListHorizontal>
                       children: [
                         Hero(
                           tag: widget.imgUrl,
-                          child: Image.network(
-                            widget.imgUrl,
+                          child: CachedNetworkImage(
+                            imageUrl: widget.imgUrl,
                             height: 250,
                             width: MediaQuery.of(context).size.width,
                             fit: BoxFit.cover,
-                            errorBuilder: (context, error, stackTrace) =>
+                            errorWidget: (context, error, stackTrace) =>
                                 Center(child: Icon(Icons.broken_image)),
-                            loadingBuilder:
-                                (context, child, loadingProgress) {
-                              if (loadingProgress == null) return child;
-                              return Center(child: ShimmerExplore());
-                            },
+                            placeholder: (context, child) =>
+                                Center(child: ShimmerExplore()),
                           ),
+
+                          // Image.network(
+                          //   widget.imgUrl,
+                          //   height: 250,
+                          //   width: MediaQuery.of(context).size.width,
+                          //   fit: BoxFit.cover,
+                          //   errorBuilder: (context, error, stackTrace) =>
+                          //       Center(child: Icon(Icons.broken_image)),
+                          //   loadingBuilder:
+                          //       (context, child, loadingProgress) {
+                          //     if (loadingProgress == null) return child;
+                          //     return Center(child: ShimmerExplore());
+                          //   },
+                          // ),
                         ),
                         // Gradient Overlay
                         Positioned.fill(
@@ -246,8 +237,7 @@ class _CardListHorizontalState extends State<CardListHorizontal>
                   top: 16,
                   right: 16,
                   child: Container(
-                    padding:
-                    EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                     decoration: BoxDecoration(
                       color: Colors.redAccent.withOpacity(0.85),
                       borderRadius: BorderRadius.circular(20),
@@ -290,7 +280,6 @@ class _CardListHorizontalState extends State<CardListHorizontal>
                   ),
                 ),
 
-
                 // Text info (bottom center)
                 Positioned(
                   left: 16,
@@ -314,8 +303,11 @@ class _CardListHorizontalState extends State<CardListHorizontal>
                         mainAxisSize: MainAxisSize.min,
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Icon(Icons.location_pin,
-                              size: 18, color: Colors.white),
+                          Icon(
+                            Icons.location_pin,
+                            size: 18,
+                            color: Colors.white,
+                          ),
                           SizedBox(width: 4),
                           Text(
                             widget.location,
@@ -334,15 +326,24 @@ class _CardListHorizontalState extends State<CardListHorizontal>
                           double ratingValue =
                               double.tryParse(widget.rating) ?? 0.0;
                           if (index + 1 <= ratingValue.floor()) {
-                            return Icon(Icons.star,
-                                color: Colors.amber, size: 20);
+                            return Icon(
+                              Icons.star,
+                              color: Colors.amber,
+                              size: 20,
+                            );
                           } else if (index < ratingValue &&
                               ratingValue - ratingValue.floor() >= 0.5) {
-                            return Icon(Icons.star_half,
-                                color: Colors.amber, size: 20);
+                            return Icon(
+                              Icons.star_half,
+                              color: Colors.amber,
+                              size: 20,
+                            );
                           } else {
-                            return Icon(Icons.star_border,
-                                color: Colors.amber, size: 20);
+                            return Icon(
+                              Icons.star_border,
+                              color: Colors.amber,
+                              size: 20,
+                            );
                           }
                         }),
                       ),

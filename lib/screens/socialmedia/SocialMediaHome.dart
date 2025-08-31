@@ -1,7 +1,7 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:triptribe/screens/socialmedia/componenets/post_slider.dart';
 import 'package:triptribe/screens/socialmedia/componenets/story_data.dart';
-import 'package:triptribe/screens/socialmedia/post/Post.dart';
 
 class SocialMediaScreen extends StatefulWidget {
   const SocialMediaScreen({super.key});
@@ -72,20 +72,6 @@ class _SocialMediaScreenState extends State<SocialMediaScreen> {
     }
 
     return Scaffold(
-      floatingActionButton: Padding(
-        padding: const EdgeInsets.only(bottom: 70),
-        child: FloatingActionButton(
-          shape: const CircleBorder(),
-          backgroundColor: Colors.blue,
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => PostScreen()),
-            );
-          },
-          child: const Icon(Icons.add, color: Colors.white),
-        ),
-      ),
       backgroundColor: const Color(0xFFf8f8f8),
       body: RefreshIndicator(
         onRefresh: refresh,
@@ -106,8 +92,9 @@ class _SocialMediaScreenState extends State<SocialMediaScreen> {
                   // Bigger Logo
                   Padding(
                     padding: const EdgeInsets.only(left: 12),
-                    child: Image.network(
-                      'https://github.com/walid269/test/blob/main/ChatGPT%20Image%20Aug%2014,%202025,%2009_30_12%20AM.png?raw=true',
+                    child: CachedNetworkImage(
+                      imageUrl:
+                          'https://github.com/walid269/test/blob/main/ChatGPT%20Image%20Aug%2014,%202025,%2009_30_12%20AM.png?raw=true',
                       height: 80,
                       fit: BoxFit.contain,
                     ),
@@ -117,16 +104,18 @@ class _SocialMediaScreenState extends State<SocialMediaScreen> {
                     children: [
                       IconButton(
                         onPressed: () {},
-                        icon: Image.network(
-                          'https://cdn-icons-png.flaticon.com/128/1077/1077035.png',
+                        icon: CachedNetworkImage(
+                          imageUrl:
+                              'https://cdn-icons-png.flaticon.com/128/1077/1077035.png',
                           height: 24,
                           width: 24,
                         ),
                       ),
                       IconButton(
                         onPressed: () {},
-                        icon: Image.network(
-                          'https://cdn-icons-png.flaticon.com/128/3024/3024593.png',
+                        icon: CachedNetworkImage(
+                          imageUrl:
+                              'https://cdn-icons-png.flaticon.com/128/3024/3024593.png',
                           height: 24,
                           width: 24,
                           color: Colors.black,
@@ -160,11 +149,12 @@ class _SocialMediaScreenState extends State<SocialMediaScreen> {
                           Row(
                             children: [
                               ClipOval(
-                                child: Image.network(
+                                child: CachedNetworkImage(
                                   fit: BoxFit.cover,
                                   height: 45,
                                   width: 45,
-                                  'https://instagram.fdac177-1.fna.fbcdn.net/v/t51.2885-19/17265790_427045080983585_8337130549214707712_a.jpg?efg=eyJ2ZW5jb2RlX3RhZyI6InByb2ZpbGVfcGljLmRqYW5nby40NTMuYzIifQ&_nc_ht=instagram.fdac177-1.fna.fbcdn.net&_nc_cat=105&_nc_oc=Q6cZ2QGXNNCmgsX0DGjai3ZzFz2-iFf5VZOTe_3B4lPEAJySIzqnqE2yNiCwjDFhOHZKfEM&_nc_ohc=3aH7R23-Bo4Q7kNvwFJudv5&_nc_gid=2r6B77Vy7WBf-uaU0sOBmA&edm=AP4sbd4BAAAA&ccb=7-5&oh=00_AfUWGk4MfniuHsYQEJrJVFe_Gq3yvjOZ7_d-7qF1wWS8HA&oe=68A3385F&_nc_sid=7a9f4b',
+                                  imageUrl:
+                                      'https://instagram.fdac177-1.fna.fbcdn.net/v/t51.2885-19/17265790_427045080983585_8337130549214707712_a.jpg?efg=eyJ2ZW5jb2RlX3RhZyI6InByb2ZpbGVfcGljLmRqYW5nby40NTMuYzIifQ&_nc_ht=instagram.fdac177-1.fna.fbcdn.net&_nc_cat=105&_nc_oc=Q6cZ2QGXNNCmgsX0DGjai3ZzFz2-iFf5VZOTe_3B4lPEAJySIzqnqE2yNiCwjDFhOHZKfEM&_nc_ohc=3aH7R23-Bo4Q7kNvwFJudv5&_nc_gid=2r6B77Vy7WBf-uaU0sOBmA&edm=AP4sbd4BAAAA&ccb=7-5&oh=00_AfUWGk4MfniuHsYQEJrJVFe_Gq3yvjOZ7_d-7qF1wWS8HA&oe=68A3385F&_nc_sid=7a9f4b',
                                 ),
                               ),
                               SizedBox(width: 10),
@@ -182,8 +172,9 @@ class _SocialMediaScreenState extends State<SocialMediaScreen> {
                                         ),
                                       ),
                                       SizedBox(width: 5),
-                                      Image.network(
-                                        'https://cdn-icons-png.flaticon.com/512/1271/1271750.png',
+                                      CachedNetworkImage(
+                                        imageUrl:
+                                            'https://cdn-icons-png.flaticon.com/512/1271/1271750.png',
                                         height: 16,
                                         width: 16,
                                       ),
@@ -224,38 +215,44 @@ class _SocialMediaScreenState extends State<SocialMediaScreen> {
                       children: [
                         SizedBox(width: 10),
                         //like icon
-                        Image.network(
+                        CachedNetworkImage(
                           color: Color(0xff262626),
                           height: 24,
                           width: 24,
-                          'https://cdn-icons-png.flaticon.com/128/1077/1077035.png',
+                          imageUrl:
+                              'https://cdn-icons-png.flaticon.com/128/1077/1077035.png',
                         ),
+
                         SizedBox(width: 20),
                         //comment icon
-                        Image.network(
+                        CachedNetworkImage(
                           color: Color(0xff262626),
                           height: 24,
                           width: 24,
-                          'https://cdn-icons-png.flaticon.com/128/5948/5948565.png',
+                          imageUrl:
+                              'https://cdn-icons-png.flaticon.com/128/5948/5948565.png',
                         ),
+
                         SizedBox(width: 20),
                         //share icon
-                        Image.network(
+                        CachedNetworkImage(
                           color: Color(0xff262626),
                           height: 24,
                           width: 24,
-                          'https://cdn-icons-png.flaticon.com/128/3024/3024593.png',
+                          imageUrl:
+                              'https://cdn-icons-png.flaticon.com/128/3024/3024593.png',
                         ),
 
                         // shows
                         SizedBox(width: 250),
 
                         //Favourite icon
-                        Image.network(
+                        CachedNetworkImage(
                           color: Color(0xff262626),
                           height: 24,
                           width: 24,
-                          'https://cdn-icons-png.flaticon.com/128/3082/3082331.png',
+                          imageUrl:
+                              'https://cdn-icons-png.flaticon.com/128/3082/3082331.png',
                         ),
                       ],
                     ),

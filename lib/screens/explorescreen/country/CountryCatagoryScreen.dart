@@ -1,5 +1,8 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:triptribe/screens/explorescreen/country/CountryTopPlacesDetails.dart';
+
+import '../../../supabase/setup.dart';
 
 class Countryscreen extends StatefulWidget {
   const Countryscreen({super.key});
@@ -9,97 +12,105 @@ class Countryscreen extends StatefulWidget {
 }
 
 class _CountryscreenState extends State<Countryscreen> {
-
   Future refresh() async {
     setState(() {});
   }
 
   @override
   Widget build(BuildContext context) {
-    return RefreshIndicator(
-      onRefresh: refresh,
-      child: SingleChildScrollView(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            CardListHorizontal(
-              name: "Dubai",
-              imgUrl: "https://images.pexels.com/photos/2453295/pexels-photo-2453295.jpeg",
-              description: 'A luxurious city known for its modern architecture and vibrant nightlife.',
-              rating: '8.0',
-              flag: 'https://t4.ftcdn.net/jpg/05/18/83/39/360_F_518833985_IGWqx1AnMNsni4CH0CnLbSxqTYhQbvRM.jpg',
+    return FutureBuilder<List<Map<String, dynamic>>>(
+      future: fetchCoutryCatagoryScreen(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          // Center the progress indicator in full available space
+          return SizedBox(
+            height:
+                MediaQuery.of(context).size.height *
+                0.5, // optional, to limit height
+            child: Center(
+              child: CircularProgressIndicator(
+                valueColor: AlwaysStoppedAnimation<Color>(Colors.blue),
+                // custom color
+                strokeWidth: 4, // thicker line
+              ),
             ),
-            CardListHorizontal(
-              name: "Indonesia",
-              imgUrl: "https://images.pexels.com/photos/4090349/pexels-photo-4090349.jpeg",
-              description: 'An archipelago with beautiful beaches and rich cultural heritage.',
-              rating: '7.5',
-              flag: 'https://media.gettyimages.com/id/1740659549/video/indonesia-flag-waving-seamless-slow-motion-high-quality-4k.jpg?s=640x640&k=20&c=YrAwCiJDpwC4u4In3UuIdjGBjgZqiwtyy1E-qs3F6e0=',
-            ),
-            CardListHorizontal(
-              name: "Jordan",
-              imgUrl: "https://images.pexels.com/photos/2097855/pexels-photo-2097855.jpeg",
-              description: 'Home to ancient monuments like Petra and stunning desert landscapes.',
-              rating: '8.3',
-              flag: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRNVgC91JRFb3UGVBzH35QMlVI3gm8wNVv4GEMjo9dKdlxBqLlAYrMf-6AyOrD88Bs7kvY&usqp=CAU',
-            ),
-            CardListHorizontal(
-              name: "Italy",
-              imgUrl: "https://images.pexels.com/photos/4987272/pexels-photo-4987272.jpeg",
-              description: 'Famous for its art, history, cuisine, and scenic coastlines.',
-              rating: '9.0',
-              flag: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSEBPxpf00iWvlZxFRG8_CiI9PhKnJGvaNWWQ&s',
-            ),
-            CardListHorizontal(
-              name: "Portugal",
-              imgUrl: "https://images.pexels.com/photos/30272791/pexels-photo-30272791.jpeg",
-              description: 'Known for its beautiful beaches, historic cities, and delicious food.',
-              rating: '8.2',
-              flag: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRKdQSxfS8JML0zK_gVnKVocPZoM7BspdaFsg&s',
-            ),
-            CardListHorizontal(
-              name: "USA",
-              imgUrl: "https://images.pexels.com/photos/378570/pexels-photo-378570.jpeg",
-              description: 'A vast country with diverse landscapes and iconic cities.',
-              rating: '8.8',
-              flag: 'https://i.pinimg.com/736x/a9/cf/4a/a9cf4ae1faee0af9b338cb93a43aa316.jpg',
-            ),
-            CardListHorizontal(
-              name: "Japan",
-              imgUrl: "https://images.pexels.com/photos/1440476/pexels-photo-1440476.jpeg",
-              description: 'A blend of tradition and technology with stunning nature.',
-              rating: '9.2',
-              flag: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQeKjdakGpg8gLhau5MOVdL-REmYoyiIzXccw&s',
-            ),
-            CardListHorizontal(
-              name: "Egypt",
-              imgUrl: "https://images.pexels.com/photos/18991572/pexels-photo-18991572.jpeg",
-              description: 'Land of ancient pyramids and rich archaeological treasures.',
-              rating: '8.5',
-              flag: 'https://t3.ftcdn.net/jpg/00/42/90/78/360_F_42907895_qbW5Aa3T6oEbyBcu8QJ94241lSGd0Fbg.jpg',
-            ),
-            CardListHorizontal(
-              name: "Maldive",
-              imgUrl: "https://images.pexels.com/photos/3601422/pexels-photo-3601422.jpeg",
-              description: 'Tropical paradise with crystal-clear waters and white sandy beaches.',
-              rating: '9.5',
-              flag: 'https://t3.ftcdn.net/jpg/04/75/25/70/360_F_475257008_YKylfsF490rvMpNZxD69WB7bs6z5EcSH.jpg',
-            ),
-            CardListHorizontal(
-              name: "Australia",
-              imgUrl: "https://images.pexels.com/photos/5707602/pexels-photo-5707602.jpeg",
-              description: 'Known for its unique wildlife and beautiful natural landscapes.',
-              rating: '8.7',
-              flag: 'https://t3.ftcdn.net/jpg/08/48/73/26/360_F_848732634_yRmx9HKhd1seyXuTHoceSEM6rgBfe3sv.jpg',
-            ),
+          );
+        }
 
-            CircularProgressIndicator(),
-            SizedBox(height: 100),
-          ],
-        ),
-      ),
+        if (snapshot.hasError) {
+          return SizedBox(
+            height: MediaQuery.of(context).size.height * 0.5,
+            child: Center(child: Text('Error: ${snapshot.error}')),
+          );
+        }
+
+        final images = snapshot.data ?? [];
+
+        if (images.isEmpty) {
+          return SizedBox(
+            height: MediaQuery.of(context).size.height * 0.5,
+            child: Center(child: Text('No Item found.')),
+          );
+        }
+
+        return SingleChildScrollView(
+          child: Column(
+            children: images.map((image) {
+              return CardListHorizontal(
+                flag: image['flag'].toString(),
+                name: image['name'].toString(),
+                imgUrl: image['imgUrl'].toString(),
+                rating: image['rating'].toString(),
+                description: image['description'].toString(),
+              );
+            }).toList(),
+          ),
+        );
+      },
     );
+
+    //   StreamBuilder<List<PlacesData>>(
+    //   stream: Stream.value(countrycatagory), // Your static list as a stream
+    //   builder: (context, snapshot) {
+    //     if (snapshot.connectionState == ConnectionState.waiting) {
+    //       return const Center(child: CircularProgressIndicator());
+    //     }
+    //
+    //     if (!snapshot.hasData || snapshot.data!.isEmpty) {
+    //       return const Center(child: Text('No data available'));
+    //     }
+    //
+    //     final data = snapshot.data!;
+    //
+    //     return RefreshIndicator(
+    //       onRefresh: () async {
+    //         // Refresh logic if needed
+    //       },
+    //       child: SingleChildScrollView(
+    //         child: Column(
+    //           crossAxisAlignment: CrossAxisAlignment.start,
+    //           children: [
+    //             // Horizontal list at the top (fixed height)
+    //
+    //
+    //             // Vertical list (full-screen scroll)
+    //             ...data.map((item) => CardListHorizontal(
+    //               name: item.name,
+    //               imgUrl: item.imgUrl,
+    //               description: item.description,
+    //               rating: item.rating,
+    //               flag: item.flag,
+    //             )),
+    //
+    //             const SizedBox(height: 20),
+    //             const Center(child: CircularProgressIndicator()),
+    //             const SizedBox(height: 100),
+    //           ],
+    //         ),
+    //       ),
+    //     );
+    //   },
+    // );
   }
 }
 
@@ -156,17 +167,15 @@ class _CardListHorizontalState extends State<CardListHorizontal> {
                     children: [
                       Hero(
                         tag: widget.imgUrl,
-                        child: Image.network(
-                          widget.imgUrl,
+                        child: CachedNetworkImage(
+                          imageUrl: widget.imgUrl,
                           height: 250,
                           width: MediaQuery.of(context).size.width,
                           fit: BoxFit.cover,
-                          errorBuilder: (context, error, stackTrace) =>
-                              const Center(child: Icon(Icons.broken_image)),
-                          loadingBuilder: (context, child, loadingProgress) {
-                            if (loadingProgress == null) return child;
-                            return Center(child: ShimmerExplore());
-                          },
+                          errorWidget: (context, url, error) =>
+                              Center(child: Icon(Icons.broken_image)),
+                          placeholder: (context, url) =>
+                              Center(child: ShimmerExplore()),
                         ),
                       ),
                       // Gradient Overlay
@@ -195,7 +204,7 @@ class _CardListHorizontalState extends State<CardListHorizontal> {
                 left: 16,
                 child: CircleAvatar(
                   radius: 20,
-                  backgroundImage: NetworkImage(widget.flag),
+                  backgroundImage: CachedNetworkImageProvider(widget.flag),
                   backgroundColor: Colors.white,
                 ),
               ),

@@ -1,12 +1,16 @@
+import 'dart:async';
 import 'dart:io';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import "package:shared_preferences/shared_preferences.dart";
+import 'package:shimmer/shimmer.dart';
 import 'package:triptribe/screens/detailsscreen/DetailsScreen.dart';
 import 'package:triptribe/screens/explorescreen/ExploreScreen.dart';
 import 'package:triptribe/screens/profile/screen/ProfileScreen.dart';
 import 'package:triptribe/screens/shimmer/shimmer_card.dart';
 import 'package:triptribe/screens/socialmedia/chat/chatingScreen.dart';
+import 'package:triptribe/supabase/setup.dart';
 import 'package:triptribe/util/images.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -17,15 +21,47 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  bool isLoading = true; // or use a state variable
+  //Searching Operation
+  List<Map<String, dynamic>> searchresults = [];
+  bool searching = false;
   final TextEditingController searchController = TextEditingController();
+  Timer? debounce;
+
+  void performsearch() async {
+    final results = await searchplaces(searchController.text.trim());
+    setState(() {
+      searchresults = results;
+    });
+  }
+
+  bool isLoading = true; // or use a state variable
 
   File? _selectedImage;
   final ProfileImageKey = "I4M3jK3Y0fdfa";
 
+  // void _initFCM()async{
+  //   FirebaseMessaging messaging = FirebaseMessaging.instance;
+  //
+  //   //Req permission for ios
+  //   await messaging.requestPermission();
+  //
+  //   //Get the fcm token unique for per devices
+  //   String? token = await messaging.getToken();
+  //   print("FCM Token: $token");
+  //
+  //   //Save token to supabase db (user_tken_table)
+  //   Supabase.instance.client.from("users_token").insert({'token':token});
+  //   FirebaseMessaging.onMessage.listen((message){
+  //     print("Notification Received: ${message.notification?.title}");
+  //   });
+  //
+  //
+  // }
+
   @override
   initState() {
     super.initState();
+
     Future.delayed(Duration(seconds: 2), () {
       setState(() {
         isLoading = false;
@@ -45,15 +81,15 @@ class _HomeScreenState extends State<HomeScreen> {
         // );
       }
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("No file selected and no file saved")),
-      );
+      print("No File user select as profile");
     }
   }
 
   Future<void> _reresh() async {
     setState(() {});
   }
+
+  final ScrollController _scrollController = ScrollController();
 
   @override
   Widget build(BuildContext context) {
@@ -88,11 +124,19 @@ class _HomeScreenState extends State<HomeScreen> {
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(25),
                       child: _selectedImage == null
-                          ? Image.network(
-                              "https://preview.redd.it/umvub4tgwxt61.jpg?auto=webp&s=92f15de309c9701dfa14e7922072aa3bf0061746",
+                          ? CachedNetworkImage(
+                              imageUrl:
+                                  "https://preview.redd.it/umvub4tgwxt61.jpg?auto=webp&s=92f15de309c9701dfa14e7922072aa3bf0061746",
                               width: 50,
                               height: 50,
                               fit: BoxFit.cover,
+                              placeholder: (context, url) => Shimmer.fromColors(
+                                baseColor: Colors.grey.shade300,
+                                highlightColor: Colors.grey.shade100,
+                                child: SizedBox(height: 50, width: 50),
+                              ),
+                              errorWidget: (context, url, error) =>
+                                  Center(child: Icon(Icons.broken_image)),
                             )
                           : ClipOval(
                               child: Image.file(
@@ -221,14 +265,19 @@ class _HomeScreenState extends State<HomeScreen> {
           ],
         ),
 
-        body: Padding(
-          padding: const EdgeInsets.all(15),
+        body: Scrollbar(
+          controller: _scrollController,
+          thumbVisibility: true,
+          radius: const Radius.circular(20),
+          thickness: 6,
+          interactive: true,
           child: SingleChildScrollView(
-            scrollDirection: Axis.vertical,
+            controller: _scrollController,
+            padding: const EdgeInsets.all(15),
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                // --- Title ---
                 RichText(
                   text: TextSpan(
                     children: [
@@ -237,7 +286,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         style: TextStyle(
                           fontSize: 22,
                           fontWeight: FontWeight.bold,
-                          color: Colors.black, // Default color
+                          color: Colors.black,
                         ),
                       ),
                       TextSpan(
@@ -245,7 +294,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         style: TextStyle(
                           fontSize: 22,
                           fontWeight: FontWeight.bold,
-                          color: Colors.black, // Blue color only for Tanvir
+                          color: Colors.black,
                         ),
                       ),
                       TextSpan(
@@ -259,465 +308,259 @@ class _HomeScreenState extends State<HomeScreen> {
                     ],
                   ),
                 ),
-                SizedBox(height: 10,),
+
+                SizedBox(height: 10),
+
+                // --- Search Box ---
                 Padding(
                   padding: const EdgeInsets.only(bottom: 10),
                   child: TextField(
                     controller: searchController,
+                    onChanged: (value) {
+                      // Immediately set searching true if any character typed
+                      searching = value.isNotEmpty;
+
+                      // Debounce search to avoid too many API calls
+                      if (debounce?.isActive ?? false) debounce!.cancel();
+                      debounce = Timer(
+                        const Duration(milliseconds: 300),
+                        () async {
+                          if (value.isNotEmpty) {
+                            searchresults = await searchplaces(value);
+                          } else {
+                            searchresults = [];
+                          }
+                          setState(() {}); // rebuild UI after results
+                        },
+                      );
+
+                      setState(
+                        () {},
+                      ); // rebuild to update suffixIcon immediately
+                    },
+                    onSubmitted: (_) async {
+                      performsearch();
+                      setState(() {
+                        searching = true;
+                      });
+                    },
                     decoration: InputDecoration(
                       hintText: 'Explore tours and adventures...',
-                      hintStyle: TextStyle(color: Colors.grey),
                       prefixIcon: Icon(Icons.search),
-
-                      //IconButton(onPressed: (){},icon: Image.asset(Images.filter,color: Colors.black,),)
-                      suffixIcon: IconButton(
-                        onPressed: () {
-                          //✅Logic Filter
-                        },
-                        icon: Image.asset(Images.filter, color: Colors.black),
-                      ),
+                      suffixIcon: searchController.text.isNotEmpty
+                          ? IconButton(
+                              icon: const Icon(Icons.clear),
+                              onPressed: () {
+                                searchController.clear();
+                                setState(() {
+                                  searching = false;
+                                  searchresults.clear();
+                                });
+                              },
+                            )
+                          : IconButton(
+                              onPressed: () {
+                                // filter logic
+                              },
+                              icon: Image.asset(
+                                Images.filter,
+                                color: Colors.black,
+                              ),
+                            ),
                       filled: true,
-                      fillColor: Color(0xffffffff),
+                      fillColor: Colors.white,
                       contentPadding: EdgeInsets.symmetric(
                         horizontal: 16,
                         vertical: 12,
                       ),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(30),
-                        borderSide: BorderSide(color: Colors.grey.shade400),
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(30),
-                        borderSide: BorderSide(color: Colors.grey.shade400),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(30),
-                        borderSide: BorderSide(color: Colors.black45),
                       ),
                     ),
-                    style: TextStyle(fontSize: 16),
-                    textInputAction: TextInputAction.search,
-                    //use next to go next field
-                    // use when you want to go next textfield
-                    //onEditingComplete: () => FocusScope.of(context).requestFocus(passFocusMode),
-                    keyboardType: TextInputType.text,
-                    autocorrect: true,
-                    enableSuggestions: true,
-                    cursorColor: Colors.blue,
-                    onChanged: (value) {
-                      // setState(() {}); // Update suffix icon
-                      // Add debounce logic if needed
-                    },
-                    onSubmitted: (value) {
-                      // Perform search
-                    },
                   ),
                 ),
+                searching
+                    ? SizedBox(height: 0, width: 0)
+                    : Column(
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                "🔥 Hot right now",
+                                style: TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              GestureDetector(
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => ExploreScreen(),
+                                    ),
+                                  );
+                                },
+                                child: Text(
+                                  "View all   ",
+                                  style: TextStyle(
+                                    color: Color(0xFF5296fa),
+                                    fontSize: 16,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
 
-                //For FIlters
-                // SingleChildScrollView(
-                //   scrollDirection: Axis.horizontal,
-                //   child: Row(children: [FilterList()]),
-                // ),
-                //
-                // SizedBox(height: 10),
+                          SizedBox(height: 10),
 
+                          // 2️⃣ Horizontal scroll with shuffled images
+                          SizedBox(
+                            height: 260,
+                            child: FutureBuilder<List<Map<String, dynamic>>>(
+                              future: fetchAllImagesShuffled(),
+                              builder: (context, snapshot) {
+                                if (snapshot.connectionState ==
+                                    ConnectionState.waiting) {
+                                  return Center(
+                                    child: CircularProgressIndicator(),
+                                  );
+                                }
+
+                                if (snapshot.hasError) {
+                                  return Center(
+                                    child: Text('Error: ${snapshot.error}'),
+                                  );
+                                }
+
+                                final images = snapshot.data ?? [];
+
+                                if (images.isEmpty) {
+                                  return Center(child: Text('No Item found.'));
+                                }
+
+                                return ListView.builder(
+                                  scrollDirection: Axis.horizontal,
+                                  itemCount: images.length,
+                                  itemBuilder: (context, index) {
+                                    final image = images[index];
+                                    return Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 8.0,
+                                      ),
+                                      child: CardList(
+                                        name: image['name'].toString(),
+                                        imgUrl: image['imgUrl'].toString(),
+                                        location: image['location'].toString(),
+                                        rating: image['rating'].toString(),
+                                        isLoading: isLoading,
+                                        demo1: image['demo_1'].toString(),
+                                        demo2: image['demo_2'].toString(),
+                                        demo3: image['demo_3'].toString(),
+                                      ),
+                                    );
+                                  },
+                                );
+                              },
+                            ),
+                          ),
+                          SizedBox(height: 20),
+                        ],
+                      ),
+
+                // --- Explore More ---
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      "🔥 Hot right now",
+                      searching ? "" : "Explore More",
                       style: TextStyle(
-                        fontWeight: FontWeight.bold,
                         fontSize: 20,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
                     GestureDetector(
                       onTap: () {
-                        Navigator.of(context).push(
-                          PageRouteBuilder(
-                            pageBuilder:
-                                (context, animation, secondaryAnimation) =>
-                                    ExploreScreen(),
-                            transitionsBuilder:
-                                (
-                                  context,
-                                  animation,
-                                  secondaryAnimation,
-                                  child,
-                                ) {
-                                  const begin = Offset(1.0, 0.0);
-                                  const end = Offset.zero;
-                                  const curve = Curves.ease;
-
-                                  final tween = Tween(
-                                    begin: begin,
-                                    end: end,
-                                  ).chain(CurveTween(curve: curve));
-                                  final offsetAnimation = animation.drive(
-                                    tween,
-                                  );
-
-                                  return SlideTransition(
-                                    position: offsetAnimation,
-                                    child: child,
-                                  );
-                                },
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => ExploreScreen(),
                           ),
                         );
                       },
                       child: Text(
-                        "View all   ",
+                        searching ? "" : "View all   ",
                         style: TextStyle(
                           color: Color(0xFF5296fa),
                           fontSize: 16,
-                          fontWeight: FontWeight.w500,
                         ),
                       ),
                     ),
                   ],
                 ),
 
-                //Scrollable Row Of Places
-                Padding(
-                  padding: EdgeInsets.only(top: 10),
-                  child: SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: Row(
-                      children: [
-                        CardList(
-                          name: 'Bali Beach',
-                          imgUrl:
-                              'https://images.pexels.com/photos/9094948/pexels-photo-9094948.jpeg',
-                          location: 'Indonesia',
-                          rating: '4.8',
-                          isLoading: isLoading,
-                        ),
+                const SizedBox(height: 10),
 
-                        CardList(
-                          name: 'Istanbul City',
-                          imgUrl:
-                              'https://images.pexels.com/photos/27705570/pexels-photo-27705570.jpeg',
-                          location: 'Turkey',
-                          rating: '5.0',
-                          isLoading: isLoading,
-                        ),
-
-                        CardList(
-                          isLoading: isLoading,
-                          name: 'Venice',
-                          imgUrl:
-                              'https://i.pinimg.com/1200x/1c/1e/b6/1c1eb67149c3e3bc8cef02e9c516266a.jpg',
-                          location: 'Italy',
-                          rating: '4.5',
-                        ),
-
-                        CardList(
-                          isLoading: isLoading,
-                          name: 'Egypt',
-                          imgUrl:
-                              'https://i.pinimg.com/736x/d5/61/cb/d561cbb96fb806f40499179f04958f1c.jpg',
-                          location: 'Misr',
-                          rating: '4.0',
-                        ),
-
-                        CardList(
-                          name: 'Blue Mosque',
-                          imgUrl:
-                              'https://i.pinimg.com/736x/7c/ff/ef/7cffef675634d9e268a5c8def95e342a.jpg',
-                          location: 'Turkey',
-                          rating: '4.3',
-                          isLoading: isLoading,
-                        ),
-
-                        CardList(
-                          name: 'Sajek Velly',
-                          imgUrl:
-                              'https://i.pinimg.com/736x/8f/81/ec/8f81ec6d7ed97b40b99b60dba6a395c8.jpg',
-                          location: 'Bangladesh',
-                          rating: '3.5',
-                          isLoading: isLoading,
-                        ),
-
-                        CardList(
-                          name: 'Niagara Falls',
-                          imgUrl:
-                              'https://i.pinimg.com/736x/87/65/bc/8765bc048b1d0fdcd6684a4e301fa8c3.jpg',
-                          location: 'Canada',
-                          rating: '4.4',
-                          isLoading: isLoading,
-                        ),
-                        SizedBox(width: 20),
-
-                        Center(
-                          child: GestureDetector(
-                            onTap: () {
-                              Navigator.of(context).push(
-                                PageRouteBuilder(
-                                  pageBuilder:
-                                      (
-                                        context,
-                                        animation,
-                                        secondaryAnimation,
-                                      ) => ExploreScreen(),
-                                  transitionsBuilder:
-                                      (
-                                        context,
-                                        animation,
-                                        secondaryAnimation,
-                                        child,
-                                      ) {
-                                        const begin = Offset(1.0, 0.0);
-                                        const end = Offset.zero;
-                                        const curve = Curves.ease;
-
-                                        final tween = Tween(
-                                          begin: begin,
-                                          end: end,
-                                        ).chain(CurveTween(curve: curve));
-                                        final offsetAnimation = animation.drive(
-                                          tween,
-                                        );
-
-                                        return SlideTransition(
-                                          position: offsetAnimation,
-                                          child: child,
-                                        );
-                                      },
-                                ),
-                              );
-                            },
-                            child: Text(
-                              "View all",
-                              style: TextStyle(
-                                color: Color(0xFF5296fa),
-                                fontSize: 16,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
+                // --- Explore More List ---
+                FutureBuilder<List<Map<String, dynamic>>>(
+                  future: fetchAllImagesShuffled(),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      // Center the progress indicator in full available space
+                      return SizedBox(
+                        height:
+                            MediaQuery.of(context).size.height *
+                            0.5, // optional, to limit height
+                        child: Center(
+                          child: CircularProgressIndicator(
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                              Colors.blue,
+                            ), // custom color
+                            strokeWidth: 4, // thicker line
                           ),
                         ),
-                        SizedBox(width: 20),
-                      ],
-                    ),
-                  ),
-                ),
+                      );
+                    }
 
-                SizedBox(height: 5),
+                    if (snapshot.hasError) {
+                      return SizedBox(
+                        height: MediaQuery.of(context).size.height * 0.5,
+                        child: Center(child: Text('Error: ${snapshot.error}')),
+                      );
+                    }
 
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      "Explore More",
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 20,
-                      ),
-                    ),
-                    //Go To Explore Screen
-                    GestureDetector(
-                      onTap: () {
-                        Navigator.of(context).push(
-                          PageRouteBuilder(
-                            pageBuilder:
-                                (context, animation, secondaryAnimation) =>
-                                    ExploreScreen(),
-                            transitionsBuilder:
-                                (
-                                  context,
-                                  animation,
-                                  secondaryAnimation,
-                                  child,
-                                ) {
-                                  const begin = Offset(1.0, 0.0);
-                                  const end = Offset.zero;
-                                  const curve = Curves.ease;
+                    final images = snapshot.data ?? [];
 
-                                  final tween = Tween(
-                                    begin: begin,
-                                    end: end,
-                                  ).chain(CurveTween(curve: curve));
-                                  final offsetAnimation = animation.drive(
-                                    tween,
-                                  );
+                    if (images.isEmpty) {
+                      return SizedBox(
+                        height: MediaQuery.of(context).size.height * 0.5,
+                        child: Center(child: Text('No Item found.')),
+                      );
+                    }
 
-                                  return SlideTransition(
-                                    position: offsetAnimation,
-                                    child: child,
-                                  );
-                                },
-                          ),
-                        );
-                      },
-                      //Navigate explore more screen
-                      child: GestureDetector(
-                        onTap: () {
-                          Navigator.of(context).push(
-                            PageRouteBuilder(
-                              pageBuilder:
-                                  (context, animation, secondaryAnimation) =>
-                                      ExploreScreen(),
-                              transitionsBuilder:
-                                  (
-                                    context,
-                                    animation,
-                                    secondaryAnimation,
-                                    child,
-                                  ) {
-                                    const begin = Offset(1.0, 0.0);
-                                    const end = Offset.zero;
-                                    const curve = Curves.ease;
-
-                                    final tween = Tween(
-                                      begin: begin,
-                                      end: end,
-                                    ).chain(CurveTween(curve: curve));
-                                    final offsetAnimation = animation.drive(
-                                      tween,
-                                    );
-
-                                    return SlideTransition(
-                                      position: offsetAnimation,
-                                      child: child,
-                                    );
-                                  },
-                            ),
+                    return SingleChildScrollView(
+                      child: Column(
+                        children: (searching ? searchresults : images).map((
+                          image,
+                        ) {
+                          return CardListHorizontal(
+                            name: image['name'].toString(),
+                            imgUrl: image['imgUrl'].toString(),
+                            location: image['location'].toString(),
+                            rating: image['rating'].toString(),
+                            demo1: image['demo_1'].toString(),
+                            demo2: image['demo_2'].toString(),
+                            demo3: image['demo_3'].toString(),
                           );
-                        },
-                        child: Text(
-                          "View all   ",
-                          style: TextStyle(
-                            color: Color(0xFF5296fa),
-                            fontSize: 16,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
+                        }).toList(),
                       ),
-                    ),
-                  ],
+                    );
+                  },
                 ),
 
-                //Scrollable Row Of Places
-                Padding(
-                  padding: EdgeInsets.only(top: 10),
-                  child: SingleChildScrollView(
-                    scrollDirection: Axis.vertical,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        CardListHorizontal(
-                          name: 'Beach',
-                          imgUrl:
-                              'https://images.pexels.com/photos/3601422/pexels-photo-3601422.jpeg',
-                          location: 'Maldives',
-                          rating: '5.2',
-                        ),
-
-                        CardListHorizontal(
-                          name: 'Santorini',
-                          imgUrl:
-                              'https://images.pexels.com/photos/1029021/pexels-photo-1029021.jpeg',
-                          location: 'Greece',
-                          rating: '5.0',
-                        ),
-
-                        CardListHorizontal(
-                          name: 'Banff National Park',
-                          imgUrl:
-                              'https://images.pexels.com/photos/33297495/pexels-photo-33297495.jpeg',
-                          location: 'Canada',
-                          rating: '4.5',
-                        ),
-
-                        CardListHorizontal(
-                          name: 'Machu Picchu',
-                          imgUrl:
-                              'https://images.pexels.com/photos/17060849/pexels-photo-17060849.jpeg',
-                          location: 'Peru',
-                          rating: '4.0',
-                        ),
-
-                        CardListHorizontal(
-                          name: 'Northern Lights in Iceland',
-                          imgUrl:
-                              'https://images.pexels.com/photos/11180713/pexels-photo-11180713.jpeg',
-                          location: 'Norway',
-                          rating: '4.5',
-                        ),
-
-                        CardListHorizontal(
-                          name: 'Plitvice Lakes',
-                          imgUrl:
-                              'https://images.pexels.com/photos/17503328/pexels-photo-17503328.jpeg',
-                          location: 'Croatia',
-                          rating: '4.7',
-                        ),
-
-                        CardListHorizontal(
-                          name: 'Ha Long Bay',
-                          imgUrl:
-                              'https://images.pexels.com/photos/4390720/pexels-photo-4390720.jpeg',
-                          location: 'Vietnam',
-                          rating: '4.4',
-                        ),
-                        SizedBox(height: 10),
-
-                        Center(
-                          child: GestureDetector(
-                            onTap: () {
-                              Navigator.of(context).push(
-                                PageRouteBuilder(
-                                  pageBuilder:
-                                      (
-                                        context,
-                                        animation,
-                                        secondaryAnimation,
-                                      ) => ExploreScreen(),
-                                  transitionsBuilder:
-                                      (
-                                        context,
-                                        animation,
-                                        secondaryAnimation,
-                                        child,
-                                      ) {
-                                        const begin = Offset(1.0, 0.0);
-                                        const end = Offset.zero;
-                                        const curve = Curves.ease;
-
-                                        final tween = Tween(
-                                          begin: begin,
-                                          end: end,
-                                        ).chain(CurveTween(curve: curve));
-                                        final offsetAnimation = animation.drive(
-                                          tween,
-                                        );
-
-                                        return SlideTransition(
-                                          position: offsetAnimation,
-                                          child: child,
-                                        );
-                                      },
-                                ),
-                              );
-                            },
-                            child: Text(
-                              "View all",
-                              style: TextStyle(
-                                color: Color(0xFF5296fa),
-                                fontSize: 16,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                          ),
-                        ),
-
-                        SizedBox(height: 100),
-                      ],
-                    ),
-                  ),
-                ),
+                // Center(child: CircularProgressIndicator(color: Colors.blue,)),
+                SizedBox(height: 100),
               ],
             ),
           ),
@@ -814,6 +657,9 @@ class CardList extends StatelessWidget {
   String location;
   bool isLoading;
   String rating;
+  String demo1;
+  String demo2;
+  String demo3;
 
   CardList({
     super.key,
@@ -822,6 +668,9 @@ class CardList extends StatelessWidget {
     required this.imgUrl,
     required this.location,
     required this.rating,
+    required this.demo1,
+    required this.demo2,
+    required this.demo3,
   });
 
   @override
@@ -830,7 +679,17 @@ class CardList extends StatelessWidget {
       onTap: () {
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => DetailsScreen()),
+          MaterialPageRoute(
+            builder: (context) => DetailsScreen(
+              imgUrl: imgUrl,
+              name: name,
+              location: location,
+              rating: rating,
+              demo1: demo1,
+              demo2: demo2,
+              demo3: demo3,
+            ),
+          ),
         );
       },
       child: SizedBox(
@@ -856,15 +715,13 @@ class CardList extends StatelessWidget {
                     padding: const EdgeInsets.all(7),
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(15),
-                      child: Image.network(
-                        imgUrl,
+                      child: CachedNetworkImage(
+                        imageUrl: imgUrl,
                         fit: BoxFit.cover,
-                        errorBuilder: (context, error, stackTrace) =>
+                        placeholder: (context, url) =>
+                            Center(child: ShimmerCard()),
+                        errorWidget: (context, url, error) =>
                             Center(child: Icon(Icons.broken_image)),
-                        loadingBuilder: (context, child, loadingProgress) {
-                          if (loadingProgress == null) return child;
-                          return Center(child: ShimmerCard());
-                        },
                       ),
                     ),
                   ),
@@ -930,6 +787,9 @@ class CardListHorizontal extends StatelessWidget {
   String imgUrl;
   String location;
   String rating;
+  String demo1;
+  String demo2;
+  String demo3;
 
   CardListHorizontal({
     super.key,
@@ -937,6 +797,9 @@ class CardListHorizontal extends StatelessWidget {
     required this.imgUrl,
     required this.location,
     required this.rating,
+    required this.demo1,
+    required this.demo2,
+    required this.demo3,
   });
 
   @override
@@ -945,7 +808,17 @@ class CardListHorizontal extends StatelessWidget {
       onTap: () {
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => DetailsScreen()),
+          MaterialPageRoute(
+            builder: (context) => DetailsScreen(
+              imgUrl: imgUrl,
+              name: name,
+              location: location,
+              rating: rating,
+              demo1: demo1,
+              demo2: demo2,
+              demo3: demo3,
+            ),
+          ),
         );
       },
       child: SizedBox(
@@ -970,15 +843,13 @@ class CardListHorizontal extends StatelessWidget {
                     padding: const EdgeInsets.all(7),
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(15),
-                      child: Image.network(
-                        imgUrl,
+                      child: CachedNetworkImage(
+                        imageUrl: imgUrl,
                         fit: BoxFit.cover,
-                        errorBuilder: (context, error, stackTrace) =>
+                        errorWidget: (context, url, error) =>
                             Center(child: Icon(Icons.broken_image)),
-                        loadingBuilder: (context, child, loadingProgress) {
-                          if (loadingProgress == null) return child;
-                          return Center(child: ShimmerCard());
-                        },
+                        placeholder: (context, url) =>
+                            Center(child: ShimmerCard()),
                       ),
                     ),
                   ),
@@ -1103,7 +974,7 @@ class OverlappingAvatars extends StatelessWidget {
                 backgroundColor: Colors.white,
                 child: CircleAvatar(
                   radius: 14,
-                  backgroundImage: NetworkImage(
+                  backgroundImage: CachedNetworkImageProvider(
                     [
                       "https://randomuser.me/api/portraits/women/2.jpg",
                       "https://avatars.githubusercontent.com/u/211104424?v=4",
