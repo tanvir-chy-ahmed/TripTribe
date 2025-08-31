@@ -4,6 +4,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart' show ImagePicker, ImageSource;
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:triptribe/private/SharedPrefKeys.dart';
 import 'package:triptribe/screens/profile/screen/EditProfile.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -16,7 +17,7 @@ class ProfileScreen extends StatefulWidget {
 class _ProfileScreenState extends State<ProfileScreen> {
   final ImagePicker _picker = ImagePicker();
   File? _selectedImage;
-  final String ProfileImageKey = "I4M3jK3Y0fdfa";
+
 
   @override
   void initState() {
@@ -30,14 +31,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
     if (pickedFile != null) {
       // 1️⃣ Delete old file if exists
-      if (prefs.containsKey(ProfileImageKey)) {
-        String? oldPath = prefs.getString(ProfileImageKey);
+      if (prefs.containsKey(PROFILE_IMAGE_KEY_SP)) {
+        String? oldPath = prefs.getString(PROFILE_IMAGE_KEY_SP);
         if (oldPath != null && File(oldPath).existsSync()) {
           await File(oldPath).delete();
         }
       }
 
-      await prefs.setString(ProfileImageKey, pickedFile.path);
+      await prefs.setString(PROFILE_IMAGE_KEY_SP, pickedFile.path);
       setState(() => _selectedImage = File(pickedFile.path));
       // Button click logic
       ScaffoldMessenger.of(
@@ -53,8 +54,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   Future<void> _loadSavedImage() async {
     final prefs = await SharedPreferences.getInstance();
-    if (prefs.containsKey(ProfileImageKey)) {
-      String? savedPath = prefs.getString(ProfileImageKey);
+    if (prefs.containsKey(PROFILE_IMAGE_KEY_SP)) {
+      String? savedPath = prefs.getString(PROFILE_IMAGE_KEY_SP);
       if (savedPath != null && File(savedPath).existsSync()) {
         setState(() => _selectedImage = File(savedPath));
         // ScaffoldMessenger.of(context).showSnackBar(
