@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:triptribe/provider/profile_provider.dart';
 import 'package:triptribe/screens/onboard/controller/onb_ctrl.dart';
-
+import 'package:provider/provider.dart';
 import 'private/SharedPrefKeys.dart';
 
 /*
@@ -18,6 +19,8 @@ Feautres-
                             ),
   # explore screen card show how much tour famous places in this country this type overview instead rating
  */
+
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Supabase.initialize(
@@ -25,7 +28,13 @@ void main() async {
     anonKey:ANON_KEY_SUPABASE
   );
   // await Firebase.initializeApp();
-  runApp(MainScreen());
+  //MainScreen()
+  runApp(
+    ChangeNotifierProvider(
+        create: (_) => ProfileImageProvider()..loadSavedImage(),
+        child: MainScreen() //Mainscreen all widgetts can access profileimgprovider,but prblm is its single provider
+    )
+  );
 }
 
 class MainScreen extends StatelessWidget {

@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:triptribe/screens/socialmedia/chat/chatingScreen.dart';
 import 'package:triptribe/screens/socialmedia/componenets/post_slider.dart';
 import 'package:triptribe/screens/socialmedia/componenets/story_data.dart';
 
@@ -27,12 +28,12 @@ class _SocialMediaScreenState extends State<SocialMediaScreen> {
       SData(
         name: "Diana",
         photo:
-            "https://instagram.fdac177-1.fna.fbcdn.net/v/t51.2885-19/517261171_17919018246106613_2245516426573786848_n.jpg?efg=eyJ2ZW5jb2RlX3RhZyI6InByb2ZpbGVfcGljLmRqYW5nby4xMDgwLmMyIn0&_nc_ht=instagram.fdac177-1.fna.fbcdn.net&_nc_cat=105&_nc_oc=Q6cZ2QGhT82sH1uYySd5xZJDm7Oyo7giwcy-JGP2egg_r7p_v_DEMlFa2rBaa8f2NcA-LYI&_nc_ohc=oa_hM-2yK5MQ7kNvwHL0N78&_nc_gid=80gl9aUlxRyG3DiEJC-pyw&edm=ALGbJPMBAAAA&ccb=7-5&oh=00_AfW0WmaIHsUcryCiQESUX3dQ-cyBDdl9Sjesrbd_5ws6AA&oe=68A31F8D&_nc_sid=7d3ac5",
+            "",
       ),
       SData(
         name: "Ethan",
         photo:
-            "https://instagram.fdac177-1.fna.fbcdn.net/v/t51.2885-19/521312139_18008675402784312_3809547618058999508_n.jpg?efg=eyJ2ZW5jb2RlX3RhZyI6InByb2ZpbGVfcGljLmRqYW5nby42NTIuYzIifQ&_nc_ht=instagram.fdac177-1.fna.fbcdn.net&_nc_cat=100&_nc_oc=Q6cZ2QGqrRvA0Ke_YpL83pgijCyP3zHWSEmauqRH__5imug0xP9-EZIp5fMR75m2NCr6sVM&_nc_ohc=Rrf9HpI-c1MQ7kNvwEgQI2q&_nc_gid=FQL09bjbDbWC6LKtShS_2Q&edm=ALGbJPMBAAAA&ccb=7-5&oh=00_AfV_kCvHkJ9pxv1jkF2NlYMycYsyHKvpL1KwJEyYRL443g&oe=68A322A1&_nc_sid=7d3ac5",
+            "",
       ),
       SData(
         name: "Fiona",
@@ -112,7 +113,31 @@ class _SocialMediaScreenState extends State<SocialMediaScreen> {
                         ),
                       ),
                       IconButton(
-                        onPressed: () {},
+                        onPressed: () {
+                          Navigator.of(context).push(
+                            PageRouteBuilder(
+                              pageBuilder: (context, animation, secondaryAnimation) =>
+                                  ChattingScreen(),
+                              transitionsBuilder:
+                                  (context, animation, secondaryAnimation, child) {
+                                const begin = Offset(1.0, 0.0);
+                                const end = Offset.zero;
+                                const curve = Curves.ease;
+
+                                final tween = Tween(
+                                  begin: begin,
+                                  end: end,
+                                ).chain(CurveTween(curve: curve));
+                                final offsetAnimation = animation.drive(tween);
+
+                                return SlideTransition(
+                                  position: offsetAnimation,
+                                  child: child,
+                                );
+                              },
+                            ),
+                          );
+                        },
                         icon: CachedNetworkImage(
                           imageUrl:
                               'https://cdn-icons-png.flaticon.com/128/3024/3024593.png',

@@ -15,5 +15,6 @@ class Images {
   static const String room = 'assets/room.jpg';
   static const String icon = 'assets/icon.jpg';
   static const String tg = 'assets/telegram.png';
+  static const String pin = 'assets/pin.png';
   static const String chat = 'assets/messenger.png';
 }

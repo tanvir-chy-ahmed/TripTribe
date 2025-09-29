@@ -5,8 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart' show ImagePicker, ImageSource;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:triptribe/private/SharedPrefKeys.dart';
+import 'package:triptribe/provider/profile_provider.dart';
 import 'package:triptribe/screens/profile/screen/EditProfile.dart';
-
+import 'package:provider/provider.dart';
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
 
@@ -15,59 +16,58 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-  final ImagePicker _picker = ImagePicker();
-  File? _selectedImage;
+  // final ImagePicker _picker = ImagePicker();
+  // File? _selectedImage;
 
 
-  @override
-  void initState() {
-    super.initState();
-    _loadSavedImage(); // Load image on widget start
-  }
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   Provider.of<ProfileImageProvider>(context).loadSavedImage(); // Load image on widget start
+  // }
 
-  Future<void> _getImage() async {
-    final prefs = await SharedPreferences.getInstance();
-    final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
-
-    if (pickedFile != null) {
-      // 1️⃣ Delete old file if exists
-      if (prefs.containsKey(PROFILE_IMAGE_KEY_SP)) {
-        String? oldPath = prefs.getString(PROFILE_IMAGE_KEY_SP);
-        if (oldPath != null && File(oldPath).existsSync()) {
-          await File(oldPath).delete();
-        }
-      }
-
-      await prefs.setString(PROFILE_IMAGE_KEY_SP, pickedFile.path);
-      setState(() => _selectedImage = File(pickedFile.path));
-      // Button click logic
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text("File Exist ${pickedFile.path}")));
-    } else {
-      // Button click logic
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text("No file Selected")));
-    }
-  }
-
-  Future<void> _loadSavedImage() async {
-    final prefs = await SharedPreferences.getInstance();
-    if (prefs.containsKey(PROFILE_IMAGE_KEY_SP)) {
-      String? savedPath = prefs.getString(PROFILE_IMAGE_KEY_SP);
-      if (savedPath != null && File(savedPath).existsSync()) {
-        setState(() => _selectedImage = File(savedPath));
-        // ScaffoldMessenger.of(context).showSnackBar(
-        //   SnackBar(content: Text("Loaded existing file: $savedPath")),
-        // );
-      }
-    } else {
-      // ScaffoldMessenger.of(context).showSnackBar(
-      //   const SnackBar(content: Text("No file selected and no file saved")),
-      // );
-    }
-  }
+  // Future<void> _getImage() async {
+  //   final prefs = await SharedPreferences.getInstance();
+  //   final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
+  //
+  //   if (pickedFile != null) {
+  //     // 1️⃣ Delete old file if exists
+  //     if (prefs.containsKey(PROFILE_IMAGE_KEY_SP)) {
+  //       String? oldPath = prefs.getString(PROFILE_IMAGE_KEY_SP);
+  //       if (oldPath != null && File(oldPath).existsSync()) {
+  //         await File(oldPath).delete();
+  //       }
+  //     }
+  //
+  //     await prefs.setString(PROFILE_IMAGE_KEY_SP, pickedFile.path);
+  //     setState(() => _selectedImage = File(pickedFile.path));
+  //     // Button click logic
+  //     ScaffoldMessenger.of(
+  //       context,
+  //     ).showSnackBar(SnackBar(content: Text("File Exist ${pickedFile.path}")));
+  //   } else {
+  //     // Button click logic
+  //     ScaffoldMessenger.of(
+  //       context,
+  //     ).showSnackBar(SnackBar(content: Text("No file Selected")));
+  //   }
+  // }
+  // Future<void> _loadSavedImage() async {
+  //   final prefs = await SharedPreferences.getInstance();
+  //   if (prefs.containsKey(PROFILE_IMAGE_KEY_SP)) {
+  //     String? savedPath = prefs.getString(PROFILE_IMAGE_KEY_SP);
+  //     if (savedPath != null && File(savedPath).existsSync()) {
+  //       setState(() => _selectedImage = File(savedPath));
+  //       // ScaffoldMessenger.of(context).showSnackBar(
+  //       //   SnackBar(content: Text("Loaded existing file: $savedPath")),
+  //       // );
+  //     }
+  //   } else {
+  //     // ScaffoldMessenger.of(context).showSnackBar(
+  //     //   const SnackBar(content: Text("No file selected and no file saved")),
+  //     // );
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -77,20 +77,50 @@ class _ProfileScreenState extends State<ProfileScreen> {
         backgroundColor: const Color(0xFFf2f2f2),
         elevation: 5,
         leadingWidth: double.infinity,
-        leading: Padding(
-          padding: const EdgeInsets.only(left: 10),
-          child: Row(
-            children: [
-              Text(
-                "tanvir.chy.0",
-                style: TextStyle(
-                  fontSize: 25,
-                  color: Colors.black,
-                  fontWeight: FontWeight.bold,
-                ),
+        leading: GestureDetector(
+          onTap: () {
+            showModalBottomSheet(
+              context: context,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
               ),
-              Icon(Icons.keyboard_arrow_down_rounded, color: Colors.black),
-            ],
+              builder: (BuildContext context) {
+                return Container(
+                  padding: EdgeInsets.all(16),
+                  height: 400,
+                  width: double.infinity,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text("Bottom Sheet", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                      SizedBox(height: 10),
+                      Text("Account 01"),
+                      Spacer(),
+                      Text("Account 02"),
+                      Spacer(),
+
+                    ],
+                  ),
+                );
+              },
+            );
+          },
+
+          child: Padding(
+            padding: const EdgeInsets.only(left: 10),
+            child: Row(
+              children: [
+                Text(
+                  "tanvir.chy.0",
+                  style: TextStyle(
+                    fontSize: 25,
+                    color: Colors.black,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                Icon(Icons.keyboard_arrow_down_rounded, color: Colors.black),
+              ],
+            ),
           ),
         ),
         actions: [
@@ -111,70 +141,77 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
-                  Stack(
-                    children: [
-                      _selectedImage == null
-                          ? Container(
-                              padding: EdgeInsets.all(4),
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                border: Border.all(
-                                  color: Colors.blue,
-                                  width: 3,
-                                ),
-                              ),
-                              child: ClipOval(
-                                child: CachedNetworkImage(
-                                  imageUrl:
-                                      "https://preview.redd.it/umvub4tgwxt61.jpg?auto=webp&s=92f15de309c9701dfa14e7922072aa3bf0061746",
-                                  width: 115,
-                                  height: 115,
-                                  fit: BoxFit.cover,
-                                ),
-                              ),
-                            )
-                          : Container(
-                              padding: EdgeInsets.all(4),
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                border: Border.all(
-                                  color: Colors.blue,
-                                  width: 3,
-                                ),
-                              ),
-                              child: ClipOval(
-                                child: Image.file(
-                                  _selectedImage!,
-                                  width: 115,
-                                  height: 115,
-                                  fit: BoxFit.cover,
-                                ),
-                              ),
+                  Consumer<ProfileImageProvider>(builder: (context,provider,_){
+                    print("Build 1 time");
+                    return Stack(
+                      children: [
+                        provider.selectedImage == null
+                            ? Container(
+                          padding: EdgeInsets.all(4),
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            border: Border.all(
+                              color: Colors.blue,
+                              width: 3,
                             ),
-                      Positioned(
-                        bottom: 0,
-                        right: 0,
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(20),
-                          child: GestureDetector(
-                            onTap: _getImage,
-                            child: Container(
-                              decoration: BoxDecoration(
-                                shape: BoxShape.rectangle,
-                                color: Colors.blue,
-                              ),
-                              padding: EdgeInsets.all(6),
-                              child: Icon(
-                                Icons.add,
-                                color: Colors.white,
-                                size: 22,
+                          ),
+                          child: ClipOval(
+                            child: CachedNetworkImage(
+                              imageUrl:
+                              "https://preview.redd.it/umvub4tgwxt61.jpg?auto=webp&s=92f15de309c9701dfa14e7922072aa3bf0061746",
+                              width: 115,
+                              height: 115,
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                        )
+                            : Container(
+                          padding: EdgeInsets.all(4),
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            border: Border.all(
+                              color: Colors.blue,
+                              width: 3,
+                            ),
+                          ),
+                          child: ClipOval(
+                            child: Image.file(
+                              provider.selectedImage!,
+                              width: 115,
+                              height: 115,
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                        ),
+                        Positioned(
+                          bottom: 0,
+                          right: 0,
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(20),
+                            child: GestureDetector(
+                              //getImage
+                              onTap: context.watch<ProfileImageProvider>().getImage
+                              // Provider.of<ProfileImageProvider>(context,listen: true).getImage
+                              ,
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.rectangle,
+                                  color: Colors.blue,
+                                ),
+                                padding: EdgeInsets.all(6),
+                                child: Icon(
+                                  Icons.add,
+                                  color: Colors.white,
+                                  size: 22,
+                                ),
                               ),
                             ),
                           ),
                         ),
-                      ),
-                    ],
-                  ),
+                      ],
+                    );
+                  }),
+
                   SizedBox(width: 25),
                   Column(
                     children: [

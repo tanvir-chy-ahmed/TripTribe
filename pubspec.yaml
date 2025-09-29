@@ -25,6 +25,9 @@ dev_dependencies:
   firebase_core:
   firebase_messaging:
   share_plus:
+  provider:
+  firebase_auth: 
+  flutter_slidable:
 
 
 
@@ -53,6 +56,7 @@ flutter:
      - assets/menu_bar.png
      - assets/telegram.png
      - assets/messenger.png
+     - assets/pin.png
 
   # fonts:
   #   - family: Schyler

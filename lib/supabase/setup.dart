@@ -59,3 +59,27 @@ Future<List<Map<String, dynamic>>> searchplaces(String query) async {
 
 
 
+Future<List<Map<String, dynamic>>> searchpersons(String query) async {
+  try {
+    final response = await supabase
+        .from('homescreen')
+        .select()
+        .or('name.ilike.%$query%,location.ilike.%$query%');
+
+    // .ilike('name', '%$query%');// search in the 'name' column
+
+    print("\n\n\nerror $response\n\n\n");
+    if (response.isNotEmpty) {
+      final results = List<Map<String, dynamic>>.from(response);
+      results.shuffle();
+      return results;
+    } else {
+      return [];
+    }
+  } catch (e) {
+    print("\n\n\nerror $e\n\n\n");
+    print("\n\n\nerror $e\n\n\n");
+    return [];
+  }
+}
+

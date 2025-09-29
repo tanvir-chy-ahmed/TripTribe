@@ -1,10 +1,8 @@
 import 'dart:async';
-import 'dart:io';
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import "package:shared_preferences/shared_preferences.dart";
 import 'package:shimmer/shimmer.dart';
+import 'package:triptribe/provider/profile_provider.dart';
 import 'package:triptribe/screens/detailsscreen/DetailsScreen.dart';
 import 'package:triptribe/screens/explorescreen/ExploreScreen.dart';
 import 'package:triptribe/screens/profile/screen/ProfileScreen.dart';
@@ -12,6 +10,9 @@ import 'package:triptribe/screens/shimmer/shimmer_card.dart';
 import 'package:triptribe/screens/socialmedia/chat/chatingScreen.dart';
 import 'package:triptribe/supabase/setup.dart';
 import 'package:triptribe/util/images.dart';
+import 'package:provider/provider.dart';
+
+
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -36,54 +37,24 @@ class _HomeScreenState extends State<HomeScreen> {
 
   bool isLoading = true; // or use a state variable
 
-  File? _selectedImage;
-  final ProfileImageKey = "I4M3jK3Y0fdfa";
 
-  // void _initFCM()async{
-  //   FirebaseMessaging messaging = FirebaseMessaging.instance;
-  //
-  //   //Req permission for ios
-  //   await messaging.requestPermission();
-  //
-  //   //Get the fcm token unique for per devices
-  //   String? token = await messaging.getToken();
-  //   print("FCM Token: $token");
-  //
-  //   //Save token to supabase db (user_tken_table)
-  //   Supabase.instance.client.from("users_token").insert({'token':token});
-  //   FirebaseMessaging.onMessage.listen((message){
-  //     print("Notification Received: ${message.notification?.title}");
-  //   });
-  //
-  //
-  // }
+
+
 
   @override
   initState() {
     super.initState();
-
+    Future.microtask((){
+      Provider.of<ProfileImageProvider>(context,listen:false).loadSavedImage();
+    });
     Future.delayed(Duration(seconds: 2), () {
-      setState(() {
-        isLoading = false;
-        _loadSavedImage();
-      });
+      if(mounted)
+        {
+          setState(()=> isLoading =false);
+        }
     });
   }
 
-  Future<void> _loadSavedImage() async {
-    final prefs = await SharedPreferences.getInstance();
-    if (prefs.containsKey(ProfileImageKey)) {
-      String? savedPath = prefs.getString(ProfileImageKey);
-      if (savedPath != null && File(savedPath).existsSync()) {
-        setState(() => _selectedImage = File(savedPath));
-        // ScaffoldMessenger.of(context).showSnackBar(
-        //   SnackBar(content: Text("Loaded existing file: $savedPath")),
-        // );
-      }
-    } else {
-      print("No File user select as profile");
-    }
-  }
 
   Future<void> _reresh() async {
     setState(() {});
@@ -93,6 +64,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final profileProvider = context.watch<ProfileImageProvider>();
     return RefreshIndicator(
       onRefresh: _reresh,
       child: Scaffold(
@@ -101,7 +73,6 @@ class _HomeScreenState extends State<HomeScreen> {
           backgroundColor: Color(0xFFf2f2f2),
           elevation: 0,
           leadingWidth: 220,
-          // enough width to fit avatar + texts
           leading: Padding(
             padding: const EdgeInsets.only(left: 12),
             child: GestureDetector(
@@ -123,7 +94,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(25),
-                      child: _selectedImage == null
+                      child: profileProvider.selectedImage == null
                           ? CachedNetworkImage(
                               imageUrl:
                                   "https://preview.redd.it/umvub4tgwxt61.jpg?auto=webp&s=92f15de309c9701dfa14e7922072aa3bf0061746",
@@ -140,7 +111,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             )
                           : ClipOval(
                               child: Image.file(
-                                _selectedImage!,
+                                profileProvider.selectedImage!,
                                 width: 50,
                                 height: 50,
                                 fit: BoxFit.cover,

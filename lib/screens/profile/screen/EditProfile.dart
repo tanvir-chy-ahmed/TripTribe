@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class EditProfile extends StatefulWidget {
   const EditProfile({super.key});
@@ -16,6 +17,27 @@ class _EditProfileState extends State<EditProfile> {
   final FocusNode usernameNode = FocusNode();
   final FocusNode bioNode = FocusNode();
   final FocusNode nameNode = FocusNode();
+
+
+  String selectedGender = "Male";
+
+
+
+  addUserInfo() async {
+    nameCtrl.text.trim();
+
+
+
+    //
+    // await Supabase.instance.client.from('Users').insert({
+    //   'profileImg': ImageUrlCtrl.text.trim(),
+    //   'name': nameCtrl.text.trim(),
+    //   'username': usernameCtrl.text.trim(),
+    //   'gender': gender.text.trim(),
+    //   'bio': bioCtrl.text.trim(),
+    // });
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -53,6 +75,7 @@ class _EditProfileState extends State<EditProfile> {
             // Notification Icon
             GestureDetector(
               onTap: (){
+                addUserInfo();
                 Navigator.pop(context);
                 // Button click logic
                 ScaffoldMessenger.of(context).showSnackBar(
@@ -133,6 +156,42 @@ class _EditProfileState extends State<EditProfile> {
                 ),
                 const SizedBox(height: 10),
 
+                Row(
+                  children: [
+                    Text(
+                      "Gender",
+                      style: const TextStyle(
+                        color: Colors.black,
+                        fontSize: 20,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    SizedBox(width: 90,),
+
+                    ChoiceChip(
+                      label: Text("Male"),
+                      selected: selectedGender == "Male",
+                      onSelected: (bool selected) {
+                        setState(() {
+                          selectedGender = "Male";
+                        });
+                      },
+                    ),
+                    SizedBox(width: 10),
+                    ChoiceChip(
+                      label: Text("Female"),
+                      selected: selectedGender == "Female",
+                      onSelected: (bool selected) {
+                        setState(() {
+                          selectedGender = "Female";
+                        });
+                      },
+                    ),
+                  ],
+                ),
+
+                const SizedBox(height: 10),
+
                 InputRow(
                   label: "Bio",
                   hint: "Tell us a little about yourself",
@@ -140,6 +199,8 @@ class _EditProfileState extends State<EditProfile> {
                   focusNode: bioNode,
                   nextFocus: null, // last field
                 ),
+
+
               ],
             ),
           ),
